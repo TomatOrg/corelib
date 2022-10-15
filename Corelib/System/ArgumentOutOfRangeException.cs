@@ -21,6 +21,15 @@ public class ArgumentOutOfRangeException : ArgumentException
     internal const string NeedNonNegOrNegative1 = "Number must be either non-negative and less than or equal to Int32.MaxValue or -1.";
     internal const string Count = "Count must be positive and count must refer to a location within the string/array/collection.";
     internal const string AddValue = "Value to add was out of range.";
+
+    internal const string InvalidHighSurrogate =
+        "A valid high surrogate character is between 0xd800 and 0xdbff, inclusive.";
+
+    internal const string InvalidLowSurrogate =
+        "A valid low surrogate character is between 0xdc00 and 0xdfff, inclusive.";
+    
+    internal const string InvalidUTF32 =
+        "A valid UTF32 value is between 0x000000 and 0x10ffff, inclusive, and should not include surrogate codepoint values (0x00d800 ~ 0x00dfff).";
     
     internal const string Index =
         "Index was out of range. Must be non-negative and less than the size of the collection.";
