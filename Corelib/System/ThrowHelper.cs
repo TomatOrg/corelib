@@ -37,6 +37,7 @@
 #nullable enable
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace System
@@ -221,6 +222,18 @@ namespace System
             // Generic key to move the boxing to the right hand side of throw
             throw GetKeyNotFoundException((object?)key);
         }
+
+        [DoesNotReturn]
+        internal static void ThrowKeyNullException() => ThrowArgumentNullException("key");
+
+        [DoesNotReturn]
+        internal static void ThrowArgumentNullException(string name) => throw new ArgumentNullException(name);
+
+        [DoesNotReturn]
+        internal static void ThrowArgumentNullException(string name, string message) => throw new ArgumentNullException(name, message);
+
+        [DoesNotReturn]
+        internal static void ThrowValueNullException() => throw new ArgumentException("The value was of an incorrect type for this dictionary.");
 
         internal static void ThrowArgumentException(ExceptionResource resource)
         {

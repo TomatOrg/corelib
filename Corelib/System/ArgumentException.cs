@@ -8,6 +8,9 @@ public class ArgumentException : SystemException
     internal const string StringZeroLength = "String cannot have zero length.";
     internal const string StringComparison = "The string comparison type passed in is currently not supported.";
     internal const string CannotBeNaN = "TimeSpan does not accept floating point Not-a-Number values.";
+
+    internal const string InvalidOffLen =
+        "Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.";
     
     internal const string DateTimeBadBinaryData =
         "The binary data must result in a DateTime with ticks between DateTime.MinValue.Ticks and DateTime.MaxValue.Ticks.";
