@@ -7,7 +7,11 @@ public class ArgumentException : SystemException
     internal const string EmptyName = "Empty name is not legal.";
     internal const string StringZeroLength = "String cannot have zero length.";
     internal const string StringComparison = "The string comparison type passed in is currently not supported.";
-
+    internal const string CannotBeNaN = "TimeSpan does not accept floating point Not-a-Number values.";
+    
+    internal const string DateTimeBadBinaryData =
+        "The binary data must result in a DateTime with ticks between DateTime.MinValue.Ticks and DateTime.MaxValue.Ticks.";
+    
     internal const string InvalidGroupSize =
         "Every element in the value array should be between one and nine, except for the last element, which can be zero.";
     

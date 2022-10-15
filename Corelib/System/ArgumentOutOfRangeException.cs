@@ -20,7 +20,8 @@ public class ArgumentOutOfRangeException : ArgumentException
     internal const string IndexCount = "Index and count must refer to a location within the string.";
     internal const string NeedNonNegOrNegative1 = "Number must be either non-negative and less than or equal to Int32.MaxValue or -1.";
     internal const string Count = "Count must be positive and count must refer to a location within the string/array/collection.";
-
+    internal const string AddValue = "Value to add was out of range.";
+    
     internal const string Index =
         "Index was out of range. Must be non-negative and less than the size of the collection.";
     

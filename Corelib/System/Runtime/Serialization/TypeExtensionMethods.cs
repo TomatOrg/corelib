@@ -60,10 +60,10 @@ internal static class TypeExtensionMethods
         // {
         //     return TypeCode.Decimal;
         // }
-        // else if (type == typeof(DateTime))
-        // {
-        //     return TypeCode.DateTime;
-        // }
+        else if (type == typeof(DateTime))
+        {
+            return TypeCode.DateTime;
+        }
         else if (type == typeof(string))
         {
             return TypeCode.String;
