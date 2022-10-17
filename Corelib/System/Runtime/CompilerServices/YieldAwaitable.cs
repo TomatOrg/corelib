@@ -3,10 +3,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace System.Threading
-{
-    public delegate void WaitCallback(object? state);
-};
 
 namespace System.Runtime.CompilerServices
 {

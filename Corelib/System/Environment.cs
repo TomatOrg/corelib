@@ -41,5 +41,10 @@ namespace System
 
         internal const string NewLineConst = "\n";
 
+        public static void FailFast(string message, Exception inner)
+        {
+            throw new SystemException(message, inner);
+        }
+
     }
 }

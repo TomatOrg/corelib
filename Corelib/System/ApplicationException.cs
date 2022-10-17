@@ -1,21 +1,49 @@
-namespace System;
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
 
-public class ApplicationException : Exception
+/*=============================================================================
+**
+**
+**
+** Purpose: The base class for all "less serious" exceptions that must be
+**          declared or caught.
+**
+**
+=============================================================================*/
+
+using System.Runtime.Serialization;
+
+namespace System
 {
-    
-    public ApplicationException()
-        : base("Cannot access a disposed object.")
+    // The ApplicationException is the base class for nonfatal,
+    // application errors that occur.  These exceptions are generated
+    // (i.e., thrown) by an application, not the Runtime. Applications that need
+    // to create their own exceptions do so by extending this class.
+    // ApplicationException extends but adds no new functionality to
+    // RecoverableException.
+    public class ApplicationException : Exception
     {
-    }
+        // Creates a new ApplicationException with its message string set to
+        // the empty string, its HRESULT set to COR_E_APPLICATION,
+        // and its ExceptionInfo reference set to null.
+        public ApplicationException()
+            : base("Error in the application.")
+        {
+        }
 
-    public ApplicationException(string message)
-        : base(message)
-    {
-    }
+        // Creates a new ApplicationException with its message string set to
+        // message, its HRESULT set to COR_E_APPLICATION,
+        // and its ExceptionInfo reference set to null.
+        //
+        public ApplicationException(string? message)
+            : base(message)
+        {
+        }
 
-    public ApplicationException(string message, Exception innerException)
-        : base(message, innerException)
-    {
+        public ApplicationException(string? message, Exception? innerException)
+            : base(message, innerException)
+        {
+        }
+
     }
-    
 }

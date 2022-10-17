@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace System;
@@ -41,5 +42,33 @@ public class Exception
             
         return back;
     }
+
+    #region TODO: this
+
+    
+    internal readonly struct DispatchState
+    {
+    }
+
+    internal DispatchState CaptureDispatchState()
+    {
+        return new DispatchState();
+    }
+
+    internal void RestoreDispatchState(in DispatchState state)
+    {
+    }
+    
+    
+    [StackTraceHidden]
+    internal void SetCurrentStackTrace()
+    {
+    }
+    
+    internal void SetRemoteStackTrace(string stackTrace)
+    {
+    }
+
+    #endregion
 
 }

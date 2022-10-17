@@ -21,7 +21,10 @@ public class ArgumentOutOfRangeException : ArgumentException
     internal const string NeedNonNegOrNegative1 = "Number must be either non-negative and less than or equal to Int32.MaxValue or -1.";
     internal const string Count = "Count must be positive and count must refer to a location within the string/array/collection.";
     internal const string AddValue = "Value to add was out of range.";
-
+    internal const string LessEqualToIntegerMaxVal = "Argument must be less than or equal to 2^31 - 1 milliseconds.";
+    internal const string TimeoutWrong = "The timeout must represent a value between -1 and Int32.MaxValue, inclusive.";
+    internal const string NeedPosNum = "Positive number required.";
+    
     internal const string InvalidHighSurrogate =
         "A valid high surrogate character is between 0xd800 and 0xdbff, inclusive.";
 

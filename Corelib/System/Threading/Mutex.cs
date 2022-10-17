@@ -1,27 +1,27 @@
+using TinyDotNet;
+
 namespace System.Threading;
 
 public sealed class Mutex : WaitHandle
 {
     
-    public Mutex(bool initiallyOwned = false) 
+    public Mutex(bool initiallyOwned = false)
     {
-        Create(1);
+        _waitable = NativeHost.CreateWaitable(1);
         
         if (!initiallyOwned)
         {
-            WaitableSend(Waitable, true);
+            NativeHost.WaitableSend(_waitable, false);
         }
     }
 
     public void ReleaseMutex()
     {
-        if (Waitable == 0)
-            throw new ObjectDisposedException();
+        // TODO: somehow check out thread took the lock
 
-        if (!WaitableSend(Waitable, false))
+        if (!NativeHost.WaitableSend(_waitable, false))
         {
-            throw new ApplicationException(
-                "Object synchronization method was called from an unsynchronized block of code.");
+            throw new ApplicationException(SynchronizationLockException.DefaultMsg);
         }
     }
     

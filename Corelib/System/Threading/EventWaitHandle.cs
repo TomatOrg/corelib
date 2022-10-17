@@ -1,3 +1,5 @@
+using TinyDotNet;
+
 namespace System.Threading;
 
 public class EventWaitHandle : WaitHandle
@@ -7,11 +9,11 @@ public class EventWaitHandle : WaitHandle
     
     public EventWaitHandle(bool initialState, EventResetMode mode)
     {
-        Create(1);
+        _waitable = NativeHost.CreateWaitable(1);
 
         if (mode != EventResetMode.AutoReset && mode != EventResetMode.ManualReset)
         {
-            throw new ArgumentException("Value of flags is invalid.", nameof(mode));
+            throw new ArgumentException(ArgumentException.InvalidFlag, nameof(mode));
         }
         
         _mode = mode;
@@ -27,56 +29,47 @@ public class EventWaitHandle : WaitHandle
 
     #region Auto Reset
 
-    internal bool SetAutoReset()
+    protected bool SetAutoReset()
     {
-        return WaitableSend(Waitable, false);
+        return NativeHost.WaitableSend(_waitable, false);
     }
 
-    internal bool ResetAutoReset()
+    protected bool ResetAutoReset()
     {
-        return WaitableWait(Waitable, false) == 2;
+        return NativeHost.WaitableWait(_waitable, false) == 2;
     }
 
     #endregion
 
     #region Manual Reset
-
     
-    internal bool SetManualReset()
+    protected bool SetManualReset()
     {
         // check the waitable is not closed already, if it is then there
         // is nothing to do
-        if (WaitableWait(Waitable, false) == 1)
+        if (NativeHost.WaitableWait(_waitable, false) == 1)
         {
             return false;
         }
         
         // close the waitable, waking all waiters
-        WaitableClose(Waitable);
+        NativeHost.WaitableClose(_waitable);
 
         return true;
     }
 
-    internal bool ResetManualReset()
+    protected bool ResetManualReset()
     {
         // check the waitable is closed, if not then there
         // is nothing  to do on the reset 
-        if (WaitableWait(Waitable, false) != 1)
+        if (NativeHost.WaitableWait(_waitable, false) != 1)
         {
             return false;
         }
         
-        // create a new one to replace the old one 
-        var waitable = CreateWaitable(1);
+        // re-open the waitable, allowing new people to listen on it 
+        NativeHost.WaitableOpen(_waitable);
         
-        // Exchange it atomically, this will make sure that from now only the new event, which
-        // is not closed, is listened to 
-        var oldWaitable = Interlocked.Exchange(ref Waitable, waitable);
-        
-        // release the reference we had, anything waiting on this will also release 
-        // its own reference soon enough and then the handle will close
-        ReleaseWaitable(oldWaitable);
-
         return true;
     }
 
@@ -85,17 +78,11 @@ public class EventWaitHandle : WaitHandle
     
     public virtual bool Set()
     {
-        if (Waitable == 0) 
-            throw new ObjectDisposedException();
-
         return _mode == EventResetMode.AutoReset ? SetAutoReset() : SetManualReset();
     }
 
     public virtual bool Reset()
     {
-        if (Waitable == 0) 
-            throw new ObjectDisposedException();
-
         return _mode == EventResetMode.AutoReset ? ResetAutoReset() : ResetManualReset();
     }
 
