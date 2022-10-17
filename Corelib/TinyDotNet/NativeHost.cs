@@ -29,7 +29,7 @@ internal static class NativeHost
     internal static extern void WaitableOpen(ulong waitable);
 
     [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    internal static extern ulong WaitableSelect(ReadOnlySpan<ulong> waitables, int sendCount, int waitCount, bool block);
+    internal static extern ulong WaitableSelect(ref Span<ulong> waitables, int sendCount, int waitCount, bool block);
 
     [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
     internal static extern ulong CreateWaitable(int count);

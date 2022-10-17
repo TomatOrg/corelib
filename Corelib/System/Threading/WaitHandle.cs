@@ -89,7 +89,7 @@ public abstract class WaitHandle : IDisposable
             waitables[0] = timeout;
             waitables[1] = _waitable;
 
-            return (int)NativeHost.WaitableSelect(waitables, 0, 2, true) == 1;
+            return (int)NativeHost.WaitableSelect(ref waitables, 0, 2, true) == 1;
         }
         finally
         {
@@ -138,7 +138,7 @@ public abstract class WaitHandle : IDisposable
                     foreach (var handle in waitHandles)
                     {
                         handles[1] = handle._waitable;
-                        var index = (int)NativeHost.WaitableSelect(handles, 0, 2, true);
+                        var index = (int)NativeHost.WaitableSelect(ref handles, 0, 2, true);
 
                         // if we got a timeout just return, no need to do anything else
                         if (index == 0)
@@ -188,7 +188,7 @@ public abstract class WaitHandle : IDisposable
                     }
                 
                     // wait for one of them 
-                    var index = (int)NativeHost.WaitableSelect(handles, 0, handles.Length, true);
+                    var index = (int)NativeHost.WaitableSelect(ref handles, 0, handles.Length, true);
 
                     // check if we got a timeout 
                     return index == 0 ? WaitTimeout : index - 1;
@@ -206,7 +206,7 @@ public abstract class WaitHandle : IDisposable
                     handles[i] = waitHandles[i]._waitable;
                 }
                 
-                return (int)NativeHost.WaitableSelect(handles, 0, handles.Length, true);
+                return (int)NativeHost.WaitableSelect(ref handles, 0, handles.Length, true);
             }
         }
     }
