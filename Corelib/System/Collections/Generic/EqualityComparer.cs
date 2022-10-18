@@ -13,6 +13,32 @@ internal abstract class EqualityComparer<T> : IEqualityComparer<T>
     public static EqualityComparer<T> Default { get; } = (EqualityComparer<T>)ComparerHelpers.CreateDefaultEqualityComparer(typeof(T));
     public abstract bool Equals(T? x, T? y);
     public abstract int GetHashCode([DisallowNull] T obj);
+    
+    internal virtual int IndexOf(T[] array, T value, int startIndex, int count)
+    {
+        int endIndex = startIndex + count;
+        for (int i = startIndex; i < endIndex; i++)
+        {
+            if (Equals(array[i], value))
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    internal virtual int LastIndexOf(T[] array, T value, int startIndex, int count)
+    {
+        int endIndex = startIndex - count + 1;
+        for (int i = startIndex; i >= endIndex; i--)
+        {
+            if (Equals(array[i], value))
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
 
 }
 
@@ -43,6 +69,46 @@ internal sealed class GenericEqualityComparer<T> : EqualityComparer<T> where T :
     // If in the future this type is made sealed, change typeof(...) to GetType().
     public override int GetHashCode() =>
         typeof(GenericEqualityComparer<T>).GetHashCode();
+    
+    internal override int IndexOf(T[] array, T value, int startIndex, int count)
+    {
+        int endIndex = startIndex + count;
+        if (value == null)
+        {
+            for (int i = startIndex; i < endIndex; i++)
+            {
+                if (array[i] == null) return i;
+            }
+        }
+        else
+        {
+            for (int i = startIndex; i < endIndex; i++)
+            {
+                if (array[i] != null && array[i].Equals(value)) return i;
+            }
+        }
+        return -1;
+    }
+
+    internal override int LastIndexOf(T[] array, T value, int startIndex, int count)
+    {
+        int endIndex = startIndex - count + 1;
+        if (value == null)
+        {
+            for (int i = startIndex; i >= endIndex; i--)
+            {
+                if (array[i] == null) return i;
+            }
+        }
+        else
+        {
+            for (int i = startIndex; i >= endIndex; i--)
+            {
+                if (array[i] != null && array[i].Equals(value)) return i;
+            }
+        }
+        return -1;
+    }
 }
 
 internal sealed class NullableEqualityComparer<T> : EqualityComparer<T?> 
@@ -69,6 +135,47 @@ internal sealed class NullableEqualityComparer<T> : EqualityComparer<T?>
 
     public override int GetHashCode() =>
         GetType().GetHashCode();
+    
+    internal override int IndexOf(T?[] array, T? value, int startIndex, int count)
+    {
+        int endIndex = startIndex + count;
+        if (!value.HasValue)
+        {
+            for (int i = startIndex; i < endIndex; i++)
+            {
+                if (!array[i].HasValue) return i;
+            }
+        }
+        else
+        {
+            for (int i = startIndex; i < endIndex; i++)
+            {
+                if (array[i].HasValue && array[i]._value.Equals(value._value)) return i;
+            }
+        }
+        return -1;
+    }
+
+    internal override int LastIndexOf(T?[] array, T? value, int startIndex, int count)
+    {
+        int endIndex = startIndex - count + 1;
+        if (!value.HasValue)
+        {
+            for (int i = startIndex; i >= endIndex; i--)
+            {
+                if (!array[i].HasValue) return i;
+            }
+        }
+        else
+        {
+            for (int i = startIndex; i >= endIndex; i--)
+            {
+                if (array[i].HasValue && array[i]._value.Equals(value._value)) return i;
+            }
+        }
+        return -1;
+    }
+    
 }
 
 internal sealed class ObjectEqualityComparer<T> : EqualityComparer<T>
@@ -94,6 +201,46 @@ internal sealed class ObjectEqualityComparer<T> : EqualityComparer<T>
 
     public override int GetHashCode() =>
         GetType().GetHashCode();
+    
+    internal override int IndexOf(T[] array, T value, int startIndex, int count)
+    {
+        int endIndex = startIndex + count;
+        if (value == null)
+        {
+            for (int i = startIndex; i < endIndex; i++)
+            {
+                if (array[i] == null) return i;
+            }
+        }
+        else
+        {
+            for (int i = startIndex; i < endIndex; i++)
+            {
+                if (array[i] != null && array[i]!.Equals(value)) return i;
+            }
+        }
+        return -1;
+    }
+
+    internal override int LastIndexOf(T[] array, T value, int startIndex, int count)
+    {
+        int endIndex = startIndex - count + 1;
+        if (value == null)
+        {
+            for (int i = startIndex; i >= endIndex; i--)
+            {
+                if (array[i] == null) return i;
+            }
+        }
+        else
+        {
+            for (int i = startIndex; i >= endIndex; i--)
+            {
+                if (array[i] != null && array[i]!.Equals(value)) return i;
+            }
+        }
+        return -1;
+    }
 }
 
 internal sealed partial class ByteEqualityComparer : EqualityComparer<byte>

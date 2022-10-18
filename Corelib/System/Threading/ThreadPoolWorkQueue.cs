@@ -35,6 +35,7 @@ namespace System.Threading
                 while (true)
                 {
                     WorkStealingQueue[] oldQueues = _queues;
+                    Debug.Print($"_queues length = {oldQueues.Length}");
                     Debug.Assert(Array.IndexOf(oldQueues, queue) == -1);
 
                     var newQueues = new WorkStealingQueue[oldQueues.Length + 1];

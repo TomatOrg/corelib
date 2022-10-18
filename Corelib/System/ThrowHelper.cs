@@ -34,195 +34,20 @@
 // multiple times for different instantiation.
 //
 
-#nullable enable
+using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
 
 namespace System
 {
     [StackTraceHidden]
     internal static class ThrowHelper
     {
-        // internal static void ThrowArrayTypeMismatchException()
-        // {
-        //     throw new ArrayTypeMismatchException();
-        // }
-
-        // internal static void ThrowInvalidTypeWithPointersNotSupported(Type targetType)
-        // {
-        //     throw new ArgumentException(SR.Format(SR.Argument_InvalidTypeWithPointersNotSupported, targetType));
-        // }
-
-        internal static void ThrowIndexOutOfRangeException()
-        {
-            throw new IndexOutOfRangeException();
-        }
-
-        internal static void ThrowArgumentOutOfRangeException()
-        {
-            throw new ArgumentOutOfRangeException();
-        }
-
-        internal static void ThrowArgumentException_DestinationTooShort()
-        {
-            throw new ArgumentException("Destination is too short.", "destination");
-        }
-
-        internal static void ThrowArgumentException_OverlapAlignmentMismatch()
-        {
-            throw new ArgumentException("Overlapping spans have mismatching alignment.");
-        }
-
-        // internal static void ThrowArgumentException_ArgumentNull_TypedRefType()
-        // {
-        //     throw new ArgumentNullException("value", SR.ArgumentNull_TypedRefType);
-        // }
-
-        internal static void ThrowArgumentException_CannotExtractScalar(ExceptionArgument argument)
-        {
-            throw GetArgumentException(ExceptionResource.Argument_CannotExtractScalar, argument);
-        }
-
-        // internal static void ThrowArgumentException_TupleIncorrectType(object obj)
-        // {
-        //     throw new ArgumentException(SR.Format(SR.ArgumentException_ValueTupleIncorrectType, obj.GetType()), "other");
-        // }
-
-        internal static void ThrowArgumentOutOfRange_IndexMustBeLessException()
-        {
-            throw GetArgumentOutOfRangeException(ExceptionArgument.index,
-                                                    ExceptionResource.ArgumentOutOfRange_IndexMustBeLess);
-        }
-
-        internal static void ThrowArgumentOutOfRange_IndexMustBeLessOrEqualException()
-        {
-            throw GetArgumentOutOfRangeException(ExceptionArgument.index,
-                                                    ExceptionResource.ArgumentOutOfRange_IndexMustBeLessOrEqual);
-        }
-
-        internal static void ThrowArgumentOutOfRange_IndexException()
-        {
-            throw GetArgumentOutOfRangeException(ExceptionArgument.index,
-                                                    ExceptionResource.ArgumentOutOfRange_Index);
-        }
-        internal static void ThrowArgumentException_BadComparer(object comparer)
-        {
-            throw new ArgumentException( $"Unable to sort because the IComparer.Compare() method returns inconsistent results. Either a value does not compare equal to itself, or one value repeatedly compared to another value yields different results. IComparer: '{string.Concat(comparer)}'.");
-        }
-
-        internal static void ThrowIndexArgumentOutOfRange_NeedNonNegNumException()
-        {
-            throw GetArgumentOutOfRangeException(ExceptionArgument.index,
-                                                    ExceptionResource.ArgumentOutOfRange_NeedNonNegNum);
-        }
-
-        internal static void ThrowValueArgumentOutOfRange_NeedNonNegNumException()
-        {
-            throw GetArgumentOutOfRangeException(ExceptionArgument.value,
-                                                    ExceptionResource.ArgumentOutOfRange_NeedNonNegNum);
-        }
-
-        internal static void ThrowLengthArgumentOutOfRange_ArgumentOutOfRange_NeedNonNegNum()
-        {
-            throw GetArgumentOutOfRangeException(ExceptionArgument.length,
-                                                    ExceptionResource.ArgumentOutOfRange_NeedNonNegNum);
-        }
-
-        internal static void ThrowStartIndexArgumentOutOfRange_ArgumentOutOfRange_IndexMustBeLessOrEqual()
-        {
-            throw GetArgumentOutOfRangeException(ExceptionArgument.startIndex,
-                                                    ExceptionResource.ArgumentOutOfRange_IndexMustBeLessOrEqual);
-        }
-
-        internal static void ThrowStartIndexArgumentOutOfRange_ArgumentOutOfRange_IndexMustBeLess()
-        {
-            throw GetArgumentOutOfRangeException(ExceptionArgument.startIndex,
-                                                    ExceptionResource.ArgumentOutOfRange_IndexMustBeLess);
-        }
-
-        internal static void ThrowCountArgumentOutOfRange_ArgumentOutOfRange_Count()
-        {
-            throw GetArgumentOutOfRangeException(ExceptionArgument.count,
-                                                    ExceptionResource.ArgumentOutOfRange_Count);
-        }
-
-        internal static void ThrowArgumentOutOfRange_Year()
-        {
-            throw GetArgumentOutOfRangeException(ExceptionArgument.year,
-                                                    ExceptionResource.ArgumentOutOfRange_Year);
-        }
-
-        internal static void ThrowArgumentOutOfRange_Month(int month)
-        {
-            throw new ArgumentOutOfRangeException(nameof(month), month, "Month must be between one and twelve.");
-        }
-
-        internal static void ThrowArgumentOutOfRange_DayNumber(int dayNumber)
-        {
-            throw new ArgumentOutOfRangeException(nameof(dayNumber), dayNumber, "Day number must be between 0 and DateOnly.MaxValue.DayNumber.");
-        }
-
-        internal static void ThrowArgumentOutOfRange_BadYearMonthDay()
-        {
-            throw new ArgumentOutOfRangeException(null, "Year, Month, and Day parameters describe an un-representable DateTime.");
-        }
-
-        internal static void ThrowArgumentOutOfRange_BadHourMinuteSecond()
-        {
-            throw new ArgumentOutOfRangeException(null, "Hour, Minute, and Second parameters describe an un-representable DateTime.");
-        }
-
-        internal static void ThrowArgumentOutOfRange_TimeSpanTooLong()
-        {
-            throw new ArgumentOutOfRangeException(null, "TimeSpan overflowed because the duration is too long.");
-        }
-
-        internal static void ThrowOverflowException()
-        {
-            throw new OverflowException();
-        }
-
-        internal static void ThrowOverflowException_TimeSpanTooLong()
-        {
-            throw new OverflowException("TimeSpan overflowed because the duration is too long.");
-        }
-
-        internal static void ThrowArgumentException_Arg_CannotBeNaN()
-        {
-            throw new ArgumentException("TimeSpan does not accept floating point Not-a-Number values.");
-        }
-
-        // internal static void ThrowWrongKeyTypeArgumentException<T>(T key, Type targetType)
-        // {
-        //     // Generic key to move the boxing to the right hand side of throw
-        //     throw GetWrongKeyTypeArgumentException(key, targetType);
-        // }
-        //
-        // internal static void ThrowWrongValueTypeArgumentException<T>(T value, Type targetType)
-        // {
-        //     // Generic key to move the boxing to the right hand side of throw
-        //     throw GetWrongValueTypeArgumentException((object?)value, targetType);
-        // }
-
-        private static ArgumentException GetAddingDuplicateWithKeyArgumentException(object? key)
-        {
-            return new ArgumentException($"An item with the same key has already been added. Key: {string.Concat(key)}");
-        }
-
-        internal static void ThrowAddingDuplicateWithKeyArgumentException<T>(T key)
-        {
-            // Generic key to move the boxing to the right hand side of throw
-            throw GetAddingDuplicateWithKeyArgumentException((object?)key);
-        }
-
-        internal static void ThrowKeyNotFoundException<T>(T key)
-        {
-            // Generic key to move the boxing to the right hand side of throw
-            throw GetKeyNotFoundException((object?)key);
-        }
-
+        
         [DoesNotReturn]
         internal static void ThrowKeyNullException() => ThrowArgumentNullException("key");
 
@@ -235,46 +60,233 @@ namespace System
         [DoesNotReturn]
         internal static void ThrowValueNullException() => throw new ArgumentException("The value was of an incorrect type for this dictionary.");
 
+        // [DoesNotReturn]
+        // internal static void ThrowArrayTypeMismatchException()
+        // {
+        //     throw new ArrayTypeMismatchException();
+        // }
+
+        // [DoesNotReturn]
+        // internal static void ThrowInvalidTypeWithPointersNotSupported(Type targetType)
+        // {
+        //     throw new ArgumentException(SR.Format(SR.Argument_InvalidTypeWithPointersNotSupported, targetType));
+        // }
+
+        [DoesNotReturn]
+        internal static void ThrowIndexOutOfRangeException()
+        {
+            throw new IndexOutOfRangeException();
+        }
+
+        [DoesNotReturn]
+        internal static void ThrowArgumentOutOfRangeException()
+        {
+            throw new ArgumentOutOfRangeException();
+        }
+
+        [DoesNotReturn]
+        internal static void ThrowArgumentException_DestinationTooShort()
+        {
+            throw new ArgumentException("Destination is too short.", "destination");
+        }
+
+        [DoesNotReturn]
+        internal static void ThrowArgumentException_OverlapAlignmentMismatch()
+        {
+            throw new ArgumentException("Overlapping spans have mismatching alignment.");
+        }
+
+        [DoesNotReturn]
+        internal static void ThrowArgumentException_CannotExtractScalar(ExceptionArgument argument)
+        {
+            throw GetArgumentException(ExceptionResource.Argument_CannotExtractScalar, argument);
+        }
+
+        // [DoesNotReturn]
+        // internal static void ThrowArgumentException_TupleIncorrectType(object obj)
+        // {
+        //     throw new ArgumentException(SR.Format(SR.ArgumentException_ValueTupleIncorrectType, obj.GetType()), "other");
+        // }
+
+        [DoesNotReturn]
+        internal static void ThrowArgumentOutOfRange_IndexException()
+        {
+            throw GetArgumentOutOfRangeException(ExceptionArgument.index,
+                                                    ExceptionResource.ArgumentOutOfRange_Index);
+        }
+
+        [DoesNotReturn]
+        internal static void ThrowArgumentException_BadComparer(object? comparer)
+        {
+            throw new ArgumentException($"Unable to sort because the IComparer.Compare() method returns inconsistent results. Either a value does not compare equal to itself, or one value repeatedly compared to another value yields different results. IComparer: '{comparer}'.");
+        }
+
+        [DoesNotReturn]
+        internal static void ThrowIndexArgumentOutOfRange_NeedNonNegNumException()
+        {
+            throw GetArgumentOutOfRangeException(ExceptionArgument.index,
+                                                    ExceptionResource.ArgumentOutOfRange_NeedNonNegNum);
+        }
+
+        [DoesNotReturn]
+        internal static void ThrowValueArgumentOutOfRange_NeedNonNegNumException()
+        {
+            throw GetArgumentOutOfRangeException(ExceptionArgument.value,
+                                                    ExceptionResource.ArgumentOutOfRange_NeedNonNegNum);
+        }
+
+        [DoesNotReturn]
+        internal static void ThrowLengthArgumentOutOfRange_ArgumentOutOfRange_NeedNonNegNum()
+        {
+            throw GetArgumentOutOfRangeException(ExceptionArgument.length,
+                                                    ExceptionResource.ArgumentOutOfRange_NeedNonNegNum);
+        }
+
+        [DoesNotReturn]
+        internal static void ThrowStartIndexArgumentOutOfRange_ArgumentOutOfRange_Index()
+        {
+            throw GetArgumentOutOfRangeException(ExceptionArgument.startIndex,
+                                                    ExceptionResource.ArgumentOutOfRange_Index);
+        }
+
+        [DoesNotReturn]
+        internal static void ThrowCountArgumentOutOfRange_ArgumentOutOfRange_Count()
+        {
+            throw GetArgumentOutOfRangeException(ExceptionArgument.count,
+                                                    ExceptionResource.ArgumentOutOfRange_Count);
+        }
+
+        [DoesNotReturn]
+        internal static void ThrowArgumentOutOfRange_Year()
+        {
+            throw GetArgumentOutOfRangeException(ExceptionArgument.year,
+                                                    ExceptionResource.ArgumentOutOfRange_Year);
+        }
+
+        [DoesNotReturn]
+        internal static void ThrowArgumentOutOfRange_Month(int month)
+        {
+            throw new ArgumentOutOfRangeException(nameof(month), month, "Month must be between one and twelve.");
+        }
+
+        [DoesNotReturn]
+        internal static void ThrowArgumentOutOfRange_DayNumber(int dayNumber)
+        {
+            throw new ArgumentOutOfRangeException(nameof(dayNumber), dayNumber, "Day number must be between 0 and DateOnly.MaxValue.DayNumber.");
+        }
+
+        [DoesNotReturn]
+        internal static void ThrowArgumentOutOfRange_BadYearMonthDay()
+        {
+            throw new ArgumentOutOfRangeException(null, "Year, Month, and Day parameters describe an un-representable DateTime.");
+        }
+
+        [DoesNotReturn]
+        internal static void ThrowArgumentOutOfRange_BadHourMinuteSecond()
+        {
+            throw new ArgumentOutOfRangeException(null, "Hour, Minute, and Second parameters describe an un-representable DateTime.");
+        }
+
+        [DoesNotReturn]
+        internal static void ThrowArgumentOutOfRange_TimeSpanTooLong()
+        {
+            throw new ArgumentOutOfRangeException(null, "TimeSpan overflowed because the duration is too long.");
+        }
+
+        // [DoesNotReturn]
+        // internal static void ThrowWrongKeyTypeArgumentException<T>(T key, Type targetType)
+        // {
+        //     // Generic key to move the boxing to the right hand side of throw
+        //     throw GetWrongKeyTypeArgumentException((object?)key, targetType);
+        // }
+        //
+        // [DoesNotReturn]
+        // internal static void ThrowWrongValueTypeArgumentException<T>(T value, Type targetType)
+        // {
+        //     // Generic key to move the boxing to the right hand side of throw
+        //     throw GetWrongValueTypeArgumentException((object?)value, targetType);
+        // }
+
+        private static ArgumentException GetAddingDuplicateWithKeyArgumentException(object? key)
+        {
+            return new ArgumentException($"An item with the same key has already been added. Key: {key}");
+        }
+
+        [DoesNotReturn]
+        internal static void ThrowAddingDuplicateWithKeyArgumentException<T>(T key)
+        {
+            // Generic key to move the boxing to the right hand side of throw
+            throw GetAddingDuplicateWithKeyArgumentException((object?)key);
+        }
+
+        [DoesNotReturn]
+        internal static void ThrowKeyNotFoundException<T>(T key)
+        {
+            // Generic key to move the boxing to the right hand side of throw
+            throw GetKeyNotFoundException((object?)key);
+        }
+
+        [DoesNotReturn]
         internal static void ThrowArgumentException(ExceptionResource resource)
         {
             throw GetArgumentException(resource);
         }
 
+        [DoesNotReturn]
         internal static void ThrowArgumentException(ExceptionResource resource, ExceptionArgument argument)
         {
             throw GetArgumentException(resource, argument);
         }
-        
+
+        // [DoesNotReturn]
+        // internal static void ThrowArgumentException_HandleNotSync(string paramName)
+        // {
+        //     throw new ArgumentException(SR.Arg_HandleNotSync, paramName);
+        // }
+        //
+        // [DoesNotReturn]
+        // internal static void ThrowArgumentException_HandleNotAsync(string paramName)
+        // {
+        //     throw new ArgumentException(SR.Arg_HandleNotAsync, paramName);
+        // }
+
+        [DoesNotReturn]
         internal static void ThrowArgumentNullException(ExceptionArgument argument)
         {
             throw new ArgumentNullException(GetArgumentName(argument));
         }
 
+        [DoesNotReturn]
         internal static void ThrowArgumentNullException(ExceptionResource resource)
         {
             throw new ArgumentNullException(GetResourceString(resource));
         }
 
+        [DoesNotReturn]
         internal static void ThrowArgumentNullException(ExceptionArgument argument, ExceptionResource resource)
         {
             throw new ArgumentNullException(GetArgumentName(argument), GetResourceString(resource));
         }
 
+        [DoesNotReturn]
         internal static void ThrowArgumentOutOfRangeException(ExceptionArgument argument)
         {
             throw new ArgumentOutOfRangeException(GetArgumentName(argument));
         }
 
+        [DoesNotReturn]
         internal static void ThrowArgumentOutOfRangeException(ExceptionArgument argument, ExceptionResource resource)
         {
             throw GetArgumentOutOfRangeException(argument, resource);
         }
 
+        [DoesNotReturn]
         internal static void ThrowArgumentOutOfRangeException(ExceptionArgument argument, int paramNumber, ExceptionResource resource)
         {
             throw GetArgumentOutOfRangeException(argument, paramNumber, resource);
         }
 
+        // [DoesNotReturn]
         // internal static void ThrowEndOfFileException()
         // {
         //     throw CreateEndOfFileException();
@@ -283,197 +295,227 @@ namespace System
         // internal static Exception CreateEndOfFileException() =>
         //     new EndOfStreamException(SR.IO_EOF_ReadBeyondEOF);
 
+        [DoesNotReturn]
         internal static void ThrowInvalidOperationException()
         {
             throw new InvalidOperationException();
         }
 
+        [DoesNotReturn]
         internal static void ThrowInvalidOperationException(ExceptionResource resource)
         {
             throw GetInvalidOperationException(resource);
         }
 
+        [DoesNotReturn]
+        internal static void ThrowInvalidOperationException_OutstandingReferences()
+        {
+            throw new InvalidOperationException("Release all references before disposing this instance.");
+        }
+
+        [DoesNotReturn]
         internal static void ThrowInvalidOperationException(ExceptionResource resource, Exception e)
         {
             throw new InvalidOperationException(GetResourceString(resource), e);
         }
 
-        internal static void ThrowNullReferenceException()
-        {
-            throw new NullReferenceException("The method was called with a null array argument.");
-        }
-
+        // [DoesNotReturn]
         // internal static void ThrowSerializationException(ExceptionResource resource)
         // {
         //     throw new SerializationException(GetResourceString(resource));
         // }
 
+        // [DoesNotReturn]
+        // internal static void ThrowSecurityException(ExceptionResource resource)
+        // {
+        //     throw new System.Security.SecurityException(GetResourceString(resource));
+        // }
+
+        // [DoesNotReturn]
         // internal static void ThrowRankException(ExceptionResource resource)
         // {
         //     throw new RankException(GetResourceString(resource));
         // }
 
+        [DoesNotReturn]
         internal static void ThrowNotSupportedException(ExceptionResource resource)
         {
             throw new NotSupportedException(GetResourceString(resource));
         }
 
+        [DoesNotReturn]
         internal static void ThrowNotSupportedException_UnseekableStream()
         {
             throw new NotSupportedException("Stream does not support seeking.");
         }
 
+        [DoesNotReturn]
         internal static void ThrowNotSupportedException_UnreadableStream()
         {
             throw new NotSupportedException("Stream does not support reading.");
         }
 
+        [DoesNotReturn]
         internal static void ThrowNotSupportedException_UnwritableStream()
         {
             throw new NotSupportedException("Stream does not support writing.");
         }
 
-        internal static void ThrowObjectDisposedException(object? instance)
+        // [DoesNotReturn]
+        // internal static void ThrowUnauthorizedAccessException(ExceptionResource resource)
+        // {
+        //     throw new UnauthorizedAccessException(GetResourceString(resource));
+        // }
+
+        [DoesNotReturn]
+        internal static void ThrowObjectDisposedException(string objectName, ExceptionResource resource)
         {
-            throw new ObjectDisposedException(instance?.GetType().FullName);
+            throw new ObjectDisposedException(objectName, GetResourceString(resource));
         }
 
-        internal static void ThrowObjectDisposedException(Type? type)
-        {
-            throw new ObjectDisposedException(type?.FullName);
-        }
-
+        [DoesNotReturn]
         internal static void ThrowObjectDisposedException_StreamClosed(string? objectName)
         {
-            throw new ObjectDisposedException(objectName, "Cannot access a closed stream.");
+            throw new ObjectDisposedException(objectName, "Cannot access a closed Stream.");
         }
 
+        [DoesNotReturn]
         internal static void ThrowObjectDisposedException_FileClosed()
         {
             throw new ObjectDisposedException(null, "Cannot access a closed file.");
         }
 
+        [DoesNotReturn]
         internal static void ThrowObjectDisposedException(ExceptionResource resource)
         {
             throw new ObjectDisposedException(null, GetResourceString(resource));
         }
 
+        [DoesNotReturn]
         internal static void ThrowNotSupportedException()
         {
             throw new NotSupportedException();
         }
 
+        // [DoesNotReturn]
         // internal static void ThrowAggregateException(List<Exception> exceptions)
         // {
         //     throw new AggregateException(exceptions);
         // }
 
+        [DoesNotReturn]
         internal static void ThrowOutOfMemoryException()
         {
             throw new OutOfMemoryException();
         }
 
-        internal static void ThrowArgumentException_InvalidHandle(string? paramName)
-        {
-            throw new ArgumentException("Invalid handle.", paramName);
-        }
+        // [DoesNotReturn]
+        // internal static void ThrowArgumentException_Argument_InvalidArrayType()
+        // {
+        //     throw new ArgumentException(SR.Argument_InvalidArrayType);
+        // }
 
+        // [DoesNotReturn]
+        // internal static void ThrowArgumentException_InvalidHandle(string? paramName)
+        // {
+        //     throw new ArgumentException(SR.Arg_InvalidHandle, paramName);
+        // }
+
+        [DoesNotReturn]
         internal static void ThrowInvalidOperationException_InvalidOperation_EnumNotStarted()
         {
             throw new InvalidOperationException("Enumeration has not started. Call MoveNext.");
         }
 
+        [DoesNotReturn]
         internal static void ThrowInvalidOperationException_InvalidOperation_EnumEnded()
         {
             throw new InvalidOperationException("Enumeration already finished.");
         }
 
+        [DoesNotReturn]
         internal static void ThrowInvalidOperationException_EnumCurrent(int index)
         {
             throw GetInvalidOperationException_EnumCurrent(index);
         }
 
+        [DoesNotReturn]
         internal static void ThrowInvalidOperationException_InvalidOperation_EnumFailedVersion()
         {
-            throw new InvalidOperationException("Collection was modified; enumeration operation may not execute.");
+            throw new InvalidOperationException("Collection was modified after the enumerator was instantiated.");
         }
 
+        [DoesNotReturn]
         internal static void ThrowInvalidOperationException_InvalidOperation_EnumOpCantHappen()
         {
             throw new InvalidOperationException("Enumeration has either not started or has already finished.");
         }
 
+        [DoesNotReturn]
         internal static void ThrowInvalidOperationException_InvalidOperation_NoValue()
         {
             throw new InvalidOperationException("Nullable object must have a value.");
         }
 
+        [DoesNotReturn]
         internal static void ThrowInvalidOperationException_ConcurrentOperationsNotSupported()
         {
             throw new InvalidOperationException("Operations that change non-concurrent collections must have exclusive access. A concurrent update was performed on this collection and corrupted its state. The collection's state is no longer correct.");
         }
 
-        internal static void ThrowInvalidOperationException_HandleIsNotInitialized()
-        {
-            throw new InvalidOperationException("Handle is not initialized.");
-        }
-
+        // [DoesNotReturn]
+        // internal static void ThrowInvalidOperationException_HandleIsNotInitialized()
+        // {
+        //     throw new InvalidOperationException(SR.InvalidOperation_HandleIsNotInitialized);
+        // }
+        //
+        // [DoesNotReturn]
         // internal static void ThrowInvalidOperationException_HandleIsNotPinned()
         // {
         //     throw new InvalidOperationException(SR.InvalidOperation_HandleIsNotPinned);
         // }
 
+        [DoesNotReturn]
         internal static void ThrowArraySegmentCtorValidationFailedExceptions(Array? array, int offset, int count)
         {
             throw GetArraySegmentCtorValidationFailedException(array, offset, count);
         }
 
-        // internal static void ThrowFormatException_BadFormatSpecifier()
-        // {
-        //     throw new FormatException(SR.Argument_BadFormatSpecifier);
-        // }
+        [DoesNotReturn]
+        internal static void ThrowFormatException_BadFormatSpecifier()
+        {
+            throw new FormatException("Format specifier was invalid.");
+        }
 
+        // [DoesNotReturn]
         // internal static void ThrowArgumentOutOfRangeException_PrecisionTooLarge()
         // {
         //     throw new ArgumentOutOfRangeException("precision", SR.Format(SR.Argument_PrecisionTooLarge, StandardFormat.MaxPrecision));
         // }
-        //
-        // internal static void ThrowArgumentOutOfRangeException_SymbolDoesNotFit()
-        // {
-        //     throw new ArgumentOutOfRangeException("symbol", SR.Argument_BadFormatSpecifier);
-        // }
 
+        [DoesNotReturn]
+        internal static void ThrowArgumentOutOfRangeException_SymbolDoesNotFit()
+        {
+            throw new ArgumentOutOfRangeException("symbol", "Format specifier was invalid.");
+        }
+
+        [DoesNotReturn]
+        internal static void ThrowArgumentOutOfRangeException_NeedPosNum(string? paramName)
+        {
+            throw new ArgumentOutOfRangeException(paramName, "Positive number required.");
+        }
+
+        [DoesNotReturn]
         internal static void ThrowArgumentOutOfRangeException_NeedNonNegNum(string paramName)
         {
             throw new ArgumentOutOfRangeException(paramName, "Non-negative number required.");
         }
 
+        [DoesNotReturn]
         internal static void ArgumentOutOfRangeException_Enum_Value()
         {
             throw new ArgumentOutOfRangeException("value", "Enum value was out of legal range.");
         }
-
-        // internal static void ThrowApplicationException(int hr)
-        // {
-        //     // Get a message for this HR
-        //     Exception? ex = Marshal.GetExceptionForHR(hr);
-        //     if (ex != null && !string.IsNullOrEmpty(ex.Message))
-        //     {
-        //         ex = new ApplicationException(ex.Message);
-        //     }
-        //     else
-        //     {
-        //         ex = new ApplicationException();
-        //     }
-        //
-        //     ex.HResult = hr;
-        //     throw ex;
-        // }
-
-        // internal static void ThrowFormatInvalidString()
-        // {
-        //     throw new FormatException(SR.Format_InvalidString);
-        // }
 
         private static Exception GetArraySegmentCtorValidationFailedException(Array? array, int offset, int count)
         {
@@ -484,7 +526,7 @@ namespace System
             if (count < 0)
                 return new ArgumentOutOfRangeException(nameof(count), "Non-negative number required.");
 
-            // TODO: Debug.Assert(array.Length - offset < count);
+            Debug.Assert(array.Length - offset < count);
             return new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
         }
 
@@ -525,7 +567,7 @@ namespace System
 
         private static ArgumentOutOfRangeException GetArgumentOutOfRangeException(ExceptionArgument argument, int paramNumber, ExceptionResource resource)
         {
-            return new ArgumentOutOfRangeException(GetArgumentName(argument) + "[" + ((object)paramNumber).ToString() + "]", GetResourceString(resource));
+            return new ArgumentOutOfRangeException(GetArgumentName(argument) + "[" + paramNumber.ToString() + "]", GetResourceString(resource));
         }
 
         private static InvalidOperationException GetInvalidOperationException_EnumCurrent(int index)
@@ -547,55 +589,40 @@ namespace System
                 ThrowHelper.ThrowArgumentNullException(argName);
         }
 
-        // // Throws if 'T' is disallowed in Vector<T> in the Numerics namespace.
-        // // If 'T' is allowed, no-ops. JIT will elide the method entirely if 'T'
-        // // is supported and we're on an optimized release build.
-        // [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        // internal static void ThrowForUnsupportedNumericsVectorBaseType<T>() where T : struct
-        // {
-        //     if (!Vector<T>.IsSupported)
-        //     {
-        //         ThrowNotSupportedException(ExceptionResource.Arg_TypeNotSupported);
-        //     }
-        // }
-        //
-        // // Throws if 'T' is disallowed in Vector64<T> in the Intrinsics namespace.
-        // // If 'T' is allowed, no-ops. JIT will elide the method entirely if 'T'
-        // // is supported and we're on an optimized release build.
-        // [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        // internal static void ThrowForUnsupportedIntrinsicsVector64BaseType<T>() where T : struct
-        // {
-        //     if (!Vector64<T>.IsSupported)
-        //     {
-        //         ThrowNotSupportedException(ExceptionResource.Arg_TypeNotSupported);
-        //     }
-        // }
-        //
-        // // Throws if 'T' is disallowed in Vector128<T> in the Intrinsics namespace.
-        // // If 'T' is allowed, no-ops. JIT will elide the method entirely if 'T'
-        // // is supported and we're on an optimized release build.
-        // [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        // internal static void ThrowForUnsupportedIntrinsicsVector128BaseType<T>() where T : struct
-        // {
-        //     if (!Vector128<T>.IsSupported)
-        //     {
-        //         ThrowNotSupportedException(ExceptionResource.Arg_TypeNotSupported);
-        //     }
-        // }
-        //
-        // // Throws if 'T' is disallowed in Vector256<T> in the Intrinsics namespace.
-        // // If 'T' is allowed, no-ops. JIT will elide the method entirely if 'T'
-        // // is supported and we're on an optimized release build.
-        // [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        // internal static void ThrowForUnsupportedIntrinsicsVector256BaseType<T>() where T : struct
-        // {
-        //     if (!Vector256<T>.IsSupported)
-        //     {
-        //         ThrowNotSupportedException(ExceptionResource.Arg_TypeNotSupported);
-        //     }
-        // }
+        // Throws if 'T' is disallowed in Vector<T> in the Numerics namespace.
+        // If 'T' is allowed, no-ops. JIT will elide the method entirely if 'T'
+        // is supported and we're on an optimized release build.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void ThrowForUnsupportedNumericsVectorBaseType<T>() where T : struct
+        {
+            if (typeof(T) != typeof(byte) && typeof(T) != typeof(sbyte) &&
+                typeof(T) != typeof(short) && typeof(T) != typeof(ushort) &&
+                typeof(T) != typeof(int) && typeof(T) != typeof(uint) &&
+                typeof(T) != typeof(long) && typeof(T) != typeof(ulong) &&
+                typeof(T) != typeof(float) && typeof(T) != typeof(double) &&
+                typeof(T) != typeof(nint) && typeof(T) != typeof(nuint))
+            {
+                ThrowNotSupportedException(ExceptionResource.Arg_TypeNotSupported);
+            }
+        }
 
-#if false // Reflection-based implementation does not work for NativeAOT
+        // Throws if 'T' is disallowed in Vector64/128/256<T> in the Intrinsics namespace.
+        // If 'T' is allowed, no-ops. JIT will elide the method entirely if 'T'
+        // is supported and we're on an optimized release build.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void ThrowForUnsupportedIntrinsicsVectorBaseType<T>() where T : struct
+        {
+            if (typeof(T) != typeof(byte) && typeof(T) != typeof(sbyte) &&
+                typeof(T) != typeof(short) && typeof(T) != typeof(ushort) &&
+                typeof(T) != typeof(int) && typeof(T) != typeof(uint) &&
+                typeof(T) != typeof(long) && typeof(T) != typeof(ulong) &&
+                typeof(T) != typeof(float) && typeof(T) != typeof(double))
+            {
+                ThrowNotSupportedException(ExceptionResource.Arg_TypeNotSupported);
+            }
+        }
+
+#if false // Reflection-based implementation does not work for CoreRT/ProjectN
         // This function will convert an ExceptionArgument enum value to the argument name string.
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static string GetArgumentName(ExceptionArgument argument)
@@ -803,19 +830,13 @@ namespace System
                     return "offset";
                 case ExceptionArgument.stream:
                     return "stream";
-                case ExceptionArgument.anyOf:
-                    return "anyOf";
-                case ExceptionArgument.overlapped:
-                    return "overlapped";
-                case ExceptionArgument.minimumBytes:
-                    return "minimumBytes";
                 default:
-                    // TODO: Debug.Fail("The enum value is not defined, please check the ExceptionArgument Enum.");
+                    Debug.Fail("The enum value is not defined, please check the ExceptionArgument Enum.");
                     return "";
             }
         }
 
-#if false // Reflection-based implementation does not work for NativeAOT
+#if false // Reflection-based implementation does not work for CoreRT/ProjectN
         // This function will convert an ExceptionResource enum value to the resource string.
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static string GetResourceString(ExceptionResource resource)
@@ -833,10 +854,6 @@ namespace System
             {
                 case ExceptionResource.ArgumentOutOfRange_Index:
                     return "Index was out of range. Must be non-negative and less than the size of the collection.";
-                case ExceptionResource.ArgumentOutOfRange_IndexMustBeLessOrEqual:
-                    return "Index was out of range. Must be non-negative and less than or equal to the size of the collection.";
-                case ExceptionResource.ArgumentOutOfRange_IndexMustBeLess:
-                    return "Index was out of range. Must be non-negative and less than the size of the collection.";
                 case ExceptionResource.ArgumentOutOfRange_IndexCount:
                     return "Index and count must refer to a location within the string.";
                 case ExceptionResource.ArgumentOutOfRange_IndexCountBuffer:
@@ -844,17 +861,17 @@ namespace System
                 case ExceptionResource.ArgumentOutOfRange_Count:
                     return "Count must be positive and count must refer to a location within the string/array/collection.";
                 case ExceptionResource.ArgumentOutOfRange_Year:
-                    return "Year must be between 1 and 9999.";
+                    return "SR.ArgumentOutOfRange_Year";
                 case ExceptionResource.Arg_ArrayPlusOffTooSmall:
                     return "Destination array is not long enough to copy all the items in the collection. Check array index and length.";
                 case ExceptionResource.NotSupported_ReadOnlyCollection:
                     return "Collection is read-only.";
                 case ExceptionResource.Arg_RankMultiDimNotSupported:
-                    return "Only single dimensional arrays are supported for the requested action.";
+                    return "SR.Arg_RankMultiDimNotSupported";
                 case ExceptionResource.Arg_NonZeroLowerBound:
                     return "The lower bound of target array must be zero.";
                 case ExceptionResource.ArgumentOutOfRange_GetCharCountOverflow:
-                    return "Too many bytes. The resulting number of chars is larger than what can be returned as an int.";
+                    return "SR.ArgumentOutOfRange_GetCharCountOverflow";
                 case ExceptionResource.ArgumentOutOfRange_ListInsert:
                     return "Index must be within the bounds of the List.";
                 case ExceptionResource.ArgumentOutOfRange_NeedNonNegNum:
@@ -864,73 +881,73 @@ namespace System
                 case ExceptionResource.Argument_InvalidOffLen:
                     return "Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.";
                 case ExceptionResource.Argument_CannotExtractScalar:
-                    return "Cannot extract a Unicode scalar value from the specified index in the input.";
+                    return "SR.Argument_CannotExtractScalar";
                 case ExceptionResource.ArgumentOutOfRange_BiggerThanCollection:
                     return "Larger than collection size.";
                 case ExceptionResource.Serialization_MissingKeys:
-                    return "The Keys for this Hashtable are missing.";
+                    return "SR.Serialization_MissingKeys";
                 case ExceptionResource.Serialization_NullKey:
-                    return "One of the serialized keys is null.";
+                    return "SR.Serialization_NullKey";
                 case ExceptionResource.NotSupported_KeyCollectionSet:
-                    return "Mutating a key collection derived from a dictionary is not allowed.";
+                    return "SR.NotSupported_KeyCollectionSet";
                 case ExceptionResource.NotSupported_ValueCollectionSet:
-                    return "Mutating a value collection derived from a dictionary is not allowed.";
+                    return "SR.NotSupported_ValueCollectionSet";
                 case ExceptionResource.InvalidOperation_NullArray:
-                    return "The underlying array is null.";
+                    return "SR.InvalidOperation_NullArray";
                 case ExceptionResource.TaskT_TransitionToFinal_AlreadyCompleted:
-                    return "An attempt was made to transition a task to a final state when it had already completed.";
+                    return "SR.TaskT_TransitionToFinal_AlreadyCompleted";
                 case ExceptionResource.TaskCompletionSourceT_TrySetException_NullException:
-                    return "The exceptions collection included at least one null element.";
+                    return "SR.TaskCompletionSourceT_TrySetException_NullException";
                 case ExceptionResource.TaskCompletionSourceT_TrySetException_NoExceptions:
-                    return "The exceptions collection was empty.";
+                    return "SR.TaskCompletionSourceT_TrySetException_NoExceptions";
                 case ExceptionResource.NotSupported_StringComparison:
-                    return "The string comparison type passed in is currently not supported.";
+                    return "SR.NotSupported_StringComparison";
                 case ExceptionResource.ConcurrentCollection_SyncRoot_NotSupported:
-                    return "The SyncRoot property may not be used for the synchronization of concurrent collections.";
+                    return "SR.ConcurrentCollection_SyncRoot_NotSupported";
                 case ExceptionResource.Task_MultiTaskContinuation_NullTask:
-                    return "The tasks argument included a null value.";
+                    return "SR.Task_MultiTaskContinuation_NullTask";
                 case ExceptionResource.InvalidOperation_WrongAsyncResultOrEndCalledMultiple:
-                    return "Either the IAsyncResult object did not come from the corresponding async method on this type, or the End method was called multiple times with the same IAsyncResult.";
+                    return "SR.InvalidOperation_WrongAsyncResultOrEndCalledMultiple";
                 case ExceptionResource.Task_MultiTaskContinuation_EmptyTaskList:
-                    return "The tasks argument contains no tasks.";
+                    return "SR.Task_MultiTaskContinuation_EmptyTaskList";
                 case ExceptionResource.Task_Start_TaskCompleted:
-                    return "Start may not be called on a task that has completed.";
+                    return "SR.Task_Start_TaskCompleted";
                 case ExceptionResource.Task_Start_Promise:
-                    return "Start may not be called on a promise-style task.";
+                    return "SR.Task_Start_Promise";
                 case ExceptionResource.Task_Start_ContinuationTask:
-                    return "Start may not be called on a continuation task.";
+                    return "SR.Task_Start_ContinuationTask";
                 case ExceptionResource.Task_Start_AlreadyStarted:
-                    return "Start may not be called on a task that was already started.";
+                    return "SR.Task_Start_AlreadyStarted";
                 case ExceptionResource.Task_RunSynchronously_Continuation:
-                    return "RunSynchronously may not be called on a continuation task.";
+                    return "SR.Task_RunSynchronously_Continuation";
                 case ExceptionResource.Task_RunSynchronously_Promise:
-                    return "RunSynchronously may not be called on a task not bound to a delegate, such as the task returned from an asynchronous method.";
+                    return "SR.Task_RunSynchronously_Promise";
                 case ExceptionResource.Task_RunSynchronously_TaskCompleted:
-                    return "RunSynchronously may not be called on a task that has already completed.";
+                    return "SR.Task_RunSynchronously_TaskCompleted";
                 case ExceptionResource.Task_RunSynchronously_AlreadyStarted:
-                    return "RunSynchronously may not be called on a task that was already started.";
+                    return "SR.Task_RunSynchronously_AlreadyStarted";
                 case ExceptionResource.AsyncMethodBuilder_InstanceNotInitialized:
-                    return "The builder was not properly initialized.";
+                    return "SR.AsyncMethodBuilder_InstanceNotInitialized";
                 case ExceptionResource.Task_ContinueWith_ESandLR:
-                    return "The specified TaskContinuationOptions combined LongRunning and ExecuteSynchronously.  Synchronous continuations should not be long running.";
+                    return "SR.Task_ContinueWith_ESandLR";
                 case ExceptionResource.Task_ContinueWith_NotOnAnything:
-                    return "The specified TaskContinuationOptions excluded all continuation kinds.";
+                    return "SR.Task_ContinueWith_NotOnAnything";
                 case ExceptionResource.Task_InvalidTimerTimeSpan:
-                    return "The value needs to translate in milliseconds to -1 (signifying an infinite timeout), 0, or a positive integer less than or equal to the maximum allowed timer duration.";
+                    return "SR.Task_InvalidTimerTimeSpan";
                 case ExceptionResource.Task_Delay_InvalidMillisecondsDelay:
-                    return "The value needs to be either -1 (signifying an infinite timeout), 0 or a positive integer.";
+                    return "SR.Task_Delay_InvalidMillisecondsDelay";
                 case ExceptionResource.Task_Dispose_NotCompleted:
-                    return "A task may only be disposed if it is in a completion state (RanToCompletion, Faulted or Canceled).";
+                    return "SR.Task_Dispose_NotCompleted";
                 case ExceptionResource.Task_ThrowIfDisposed:
-                    return "The task has been disposed.";
+                    return "SR.Task_ThrowIfDisposed";
                 case ExceptionResource.Task_WaitMulti_NullTask:
-                    return "The tasks array included at least one null element.";
+                    return "SR.Task_WaitMulti_NullTask";
                 case ExceptionResource.ArgumentException_OtherNotArrayOfCorrectLength:
-                    return "The object is not an array with the same number of elements as the array to compare it to.";
+                    return "SR.ArgumentException_OtherNotArrayOfCorrectLength";
                 case ExceptionResource.ArgumentNull_Array:
                     return "Array cannot be null.";
                 case ExceptionResource.ArgumentNull_SafeHandle:
-                    return "SafeHandle cannot be null.";
+                    return "SR.ArgumentNull_SafeHandle";
                 case ExceptionResource.ArgumentOutOfRange_EndIndexStartIndex:
                     return "endIndex cannot be greater than startIndex.";
                 case ExceptionResource.ArgumentOutOfRange_Enum:
@@ -940,43 +957,41 @@ namespace System
                 case ExceptionResource.Argument_AddingDuplicate:
                     return "An item with the same key has already been added.";
                 case ExceptionResource.Argument_InvalidArgumentForComparison:
-                    return "Type of argument is not compatible with the generic comparer.";
+                    return "SR.Argument_InvalidArgumentForComparison";
                 case ExceptionResource.Arg_LowerBoundsMustMatch:
-                    return "The arrays' lower bounds must be identical.";
+                    return "SR.Arg_LowerBoundsMustMatch";
                 case ExceptionResource.Arg_MustBeType:
-                    return "Type must be a type provided by the runtime.";
+                    return "SR.Arg_MustBeType";
                 case ExceptionResource.Arg_Need1DArray:
-                    return "Array was not a one-dimensional array.";
+                    return "SR.Arg_Need1DArray";
                 case ExceptionResource.Arg_Need2DArray:
-                    return "Array was not a two-dimensional array.";
+                    return "SR.Arg_Need2DArray";
                 case ExceptionResource.Arg_Need3DArray:
-                    return "Array was not a three-dimensional array.";
+                    return "SR.Arg_Need3DArray";
                 case ExceptionResource.Arg_NeedAtLeast1Rank:
-                    return "Must provide at least one rank.";
+                    return "SR.Arg_NeedAtLeast1Rank";
                 case ExceptionResource.Arg_RankIndices:
-                    return "Indices length does not match the array rank.";
+                    return "SR.Arg_RankIndices";
                 case ExceptionResource.Arg_RanksAndBounds:
-                    return "Number of lengths and lowerBounds must match.";
+                    return "SR.Arg_RanksAndBounds";
                 case ExceptionResource.InvalidOperation_IComparerFailed:
-                    return "Failed to compare two elements in the array.";
+                    return "SR.InvalidOperation_IComparerFailed";
                 case ExceptionResource.NotSupported_FixedSizeCollection:
-                    return "Collection was of a fixed size.";
+                    return "SR.NotSupported_FixedSizeCollection";
                 case ExceptionResource.Rank_MultiDimNotSupported:
-                    return "Only single dimension arrays are supported here.";
+                    return "SR.Rank_MultiDimNotSupported";
                 case ExceptionResource.Arg_TypeNotSupported:
-                    return "Specified type is not supported";
+                    return "SR.Arg_TypeNotSupported";
                 case ExceptionResource.Argument_SpansMustHaveSameLength:
                     return "Length of items must be same as length of keys.";
                 case ExceptionResource.Argument_InvalidFlag:
                     return "Value of flags is invalid.";
                 case ExceptionResource.CancellationTokenSource_Disposed:
-                    return "The CancellationTokenSource has been disposed.";
+                    return "SR.CancellationTokenSource_Disposed";
                 case ExceptionResource.Argument_AlignmentMustBePow2:
                     return "The alignment must be a power of two.";
-                case ExceptionResource.ArgumentOutOfRange_NotGreaterThanBufferLength:
-                    return "Must not be greater than the length of the buffer.";
                 default:
-                    // TODO: Debug.Fail("The enum value is not defined, please check the ExceptionResource Enum.");
+                    Debug.Fail("The enum value is not defined, please check the ExceptionResource Enum.");
                     return "";
             }
         }
@@ -1082,10 +1097,7 @@ namespace System
         buffer,
         buffers,
         offset,
-        stream,
-        anyOf,
-        overlapped,
-        minimumBytes,
+        stream
     }
 
     //
@@ -1094,8 +1106,6 @@ namespace System
     internal enum ExceptionResource
     {
         ArgumentOutOfRange_Index,
-        ArgumentOutOfRange_IndexMustBeLessOrEqual,
-        ArgumentOutOfRange_IndexMustBeLess,
         ArgumentOutOfRange_IndexCount,
         ArgumentOutOfRange_IndexCountBuffer,
         ArgumentOutOfRange_Count,
@@ -1107,7 +1117,6 @@ namespace System
         ArgumentOutOfRange_GetCharCountOverflow,
         ArgumentOutOfRange_ListInsert,
         ArgumentOutOfRange_NeedNonNegNum,
-        ArgumentOutOfRange_NotGreaterThanBufferLength,
         ArgumentOutOfRange_SmallCapacity,
         Argument_InvalidOffLen,
         Argument_CannotExtractScalar,

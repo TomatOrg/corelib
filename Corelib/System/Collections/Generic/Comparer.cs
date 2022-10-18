@@ -9,7 +9,10 @@ namespace System.Collections.Generic;
 
 public abstract class Comparer<T> : IComparer<T>
 {
-    // public static Comparer<T> Default is runtime-specific
+    
+    // To minimize generic instantiation overhead of creating the comparer per type, we keep the generic portion of the code as small
+    // as possible and define most of the creation logic in a non-generic class.
+    public static Comparer<T> Default { get; } = (Comparer<T>)ComparerHelpers.CreateDefaultComparer(typeof(T));
 
     public static Comparer<T> Create(Comparison<T> comparison)
     {
