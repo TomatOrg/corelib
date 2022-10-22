@@ -201,20 +201,13 @@ namespace System.Threading
             
             while (true)
             {
-                // if (!WaitCore(timeoutMs))
-                // {
-                //     // Unregister the waiter. The wait subsystem used above guarantees that a thread that wakes due to a timeout does
-                //     // not observe a signal to the object being waited upon.
-                //     _separated._counts.InterlockedDecrementWaiterCount();
-                //     return false;
-                // }
-
-                if (timeoutMs != -1)
+                if (!_semaphore.Acquire(true, timeoutMs * 1000))
                 {
-                    throw new NotImplementedException();
+                    // Unregister the waiter. The wait subsystem used above guarantees that a thread that wakes due to a timeout does
+                    // not observe a signal to the object being waited upon.
+                    _separated._counts.InterlockedDecrementWaiterCount();
+                    return false;
                 }
-                
-                _semaphore.Acquire(true);
 
                 // Unregister the waiter if this thread will not be waiting anymore, and try to acquire the semaphore
                 Counts counts = _separated._counts;

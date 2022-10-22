@@ -70,35 +70,15 @@ public class Array
 
     #region Copy
 
-    public static void Copy(Array sourceArray, Array destinationArray, int length)
+    public static void Copy<T>(T[] sourceArray, T[] destinationArray, int length)
     {
-        Copy(sourceArray, destinationArray, (long)length);
+        sourceArray.AsSpan(0, length).CopyTo(destinationArray);
     }
     
-    public static void Copy(Array sourceArray, Array destinationArray, long length)
+    public static void Copy<T>(T[] sourceArray, int sourceIndex, T[] destinationArray, int destinationIndex, int length)
     {
-        Copy(sourceArray, 0, destinationArray, 0, length);
+        sourceArray.AsSpan(sourceIndex, length).CopyTo(destinationArray.AsSpan(destinationIndex));
     }
-
-    public static void Copy(Array sourceArray, int sourceIndex, Array destinationArray, int destinationIndex, int length)
-    {
-        Copy(sourceArray, (long)sourceIndex, destinationArray, destinationIndex, length);
-    }
-
-    public static void Copy(Array sourceArray, long sourceIndex, Array destinationArray, long destinationIndex, long length)
-    {
-        if (sourceArray == null) throw new ArgumentNullException(nameof(sourceArray));
-        if (destinationArray == null) throw new ArgumentNullException(nameof(destinationArray));
-        if (sourceIndex < 0 || sourceIndex >= sourceArray.Length) throw new ArgumentOutOfRangeException(nameof(sourceIndex));
-        if (destinationIndex < 0 || destinationIndex >= destinationArray.Length) throw new ArgumentOutOfRangeException(nameof(destinationIndex));
-        if (length < 0 || length >= Int64.MaxValue) throw new ArgumentOutOfRangeException(nameof(length));
-        if (sourceIndex + length > sourceArray.Length) throw new ArgumentOutOfRangeException(nameof(length));
-        if (destinationIndex + length > destinationArray.Length) throw new ArgumentOutOfRangeException(nameof(length));
-        CopyInternal(sourceArray, sourceIndex, destinationArray, destinationIndex, length);
-    }
-    
-    [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    private static extern void CopyInternal(Array sourceArray, long sourceIndex, Array destinationArray, long destinationIndex, long length);
 
     #endregion
 
@@ -580,7 +560,7 @@ public class Array
 
         public void CopyTo(T[] array, int arrayIndex)
         {
-            Array.Copy(this, 0, array, arrayIndex, array.Length);
+            Unsafe.As<T[]>(this).AsSpan(0, arrayIndex).CopyTo(array);
         }
 
         public bool Remove(T item)
