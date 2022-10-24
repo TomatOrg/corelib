@@ -113,7 +113,7 @@ namespace System
                 // Special-case T==char, as we can handle that case much more efficiently,
                 // and string.Concat(IEnumerable<char>) can be used as an efficient
                 // enumerable-based equivalent of new string(char[]).
-                using (IEnumerator<char> en = Unsafe.As<IEnumerable<char>>(values).GetEnumerator())
+                using (IEnumerator<char> en = ((IEnumerable<char>)values).GetEnumerator()) // TODO: used to be an Unsafe.As
                 {
                     if (!en.MoveNext())
                     {
