@@ -24,6 +24,8 @@ public class ArgumentOutOfRangeException : ArgumentException
     internal const string LessEqualToIntegerMaxVal = "Argument must be less than or equal to 2^31 - 1 milliseconds.";
     internal const string TimeoutWrong = "The timeout must represent a value between -1 and Int32.MaxValue, inclusive.";
     internal const string NeedPosNum = "Positive number required.";
+    internal const string TimeoutTooLarge = "Time-out interval must be less than 2^32-2.";
+    internal const string PeriodTooLarge = "Period must be less than 2^32-2.";
     
     internal const string InvalidHighSurrogate =
         "A valid high surrogate character is between 0xd800 and 0xdbff, inclusive.";

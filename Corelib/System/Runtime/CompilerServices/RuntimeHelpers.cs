@@ -32,5 +32,10 @@ public static class RuntimeHelpers
     {
         return HashCode.Combine((nint)GetObjectPointer(o));
     }
+
+    public static bool TryEnsureSufficientExecutionStack()
+    {
+        return true;
+    }
     
 }

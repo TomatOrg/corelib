@@ -10,6 +10,8 @@ public abstract class MemberInfo
     internal Module _module;
     internal string _name;
 
+    public Type DeclaringType => _declaringType;
+    public Module Module => _module;
     public string Name => _name;
 
     internal MemberInfo()

@@ -273,11 +273,7 @@ namespace System.Collections.Generic
         private ref int GetBucketRef(int hashCode)
         {
             int[] buckets = _buckets!;
-#if TARGET_64BIT
             return ref buckets[HashHelpers.FastMod((uint)hashCode, (uint)buckets.Length, _fastModMultiplier)];
-#else
-            return ref buckets[(uint)hashCode % (uint)buckets.Length];
-#endif
         }
 
         public bool Remove(T item)
@@ -921,9 +917,7 @@ namespace System.Collections.Generic
 
             // Assign member variables after both arrays allocated to guard against corruption from OOM if second fails
             _buckets = new int[newSize];
-#if TARGET_64BIT
             _fastModMultiplier = HashHelpers.GetFastModMultiplier((uint)newSize);
-#endif
             for (int i = 0; i < count; i++)
             {
                 ref Entry entry = ref entries[i];
@@ -998,9 +992,7 @@ namespace System.Collections.Generic
             _freeList = -1;
             _buckets = buckets;
             _entries = entries;
-#if TARGET_64BIT
             _fastModMultiplier = HashHelpers.GetFastModMultiplier((uint)size);
-#endif
 
             return size;
         }

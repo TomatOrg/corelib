@@ -73,6 +73,15 @@ public static class Monitor
         }
     }
 
+    public static bool Wait(object obj, int millisecondsTimeout)
+    {
+        if (millisecondsTimeout != -1)
+        {
+            throw new NotImplementedException();
+        }
+
+        return Wait(obj);
+    }
 
     public static bool Wait(object obj)
     {

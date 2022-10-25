@@ -10,6 +10,7 @@
 **
 ===========================================================*/
 
+using System.Runtime.Serialization;
 using System.Threading;
 
 namespace System
@@ -25,6 +26,17 @@ namespace System
         }
 
         public OperationCanceledException()
+            : base("The operation was canceled.")
+        {
+        }
+
+        public OperationCanceledException(string? message)
+            : base(message)
+        {
+        }
+
+        public OperationCanceledException(string? message, Exception? innerException)
+            : base(message, innerException)
         {
         }
 
@@ -36,10 +48,15 @@ namespace System
         }
 
         public OperationCanceledException(string? message, CancellationToken token)
+            : this(message)
         {
             CancellationToken = token;
         }
 
-
+        public OperationCanceledException(string? message, Exception? innerException, CancellationToken token)
+            : this(message, innerException)
+        {
+            CancellationToken = token;
+        }
     }
 }

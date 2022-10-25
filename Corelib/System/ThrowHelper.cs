@@ -397,11 +397,11 @@ namespace System
             throw new NotSupportedException();
         }
 
-        // [DoesNotReturn]
-        // internal static void ThrowAggregateException(List<Exception> exceptions)
-        // {
-        //     throw new AggregateException(exceptions);
-        // }
+        [DoesNotReturn]
+        internal static void ThrowAggregateException(List<Exception> exceptions)
+        {
+            throw new AggregateException(exceptions);
+        }
 
         [DoesNotReturn]
         internal static void ThrowOutOfMemoryException()

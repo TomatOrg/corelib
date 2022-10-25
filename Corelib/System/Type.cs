@@ -244,6 +244,8 @@ public class Type : MemberInfo
     {
         return other.IsAssignableFrom(this);
     }
+
+    public string AssemblyQualifiedName => "<TODO: AssemblyQualifiedName>";
     
     public override string ToString()
     {

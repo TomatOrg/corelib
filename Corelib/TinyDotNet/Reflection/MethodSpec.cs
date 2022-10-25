@@ -7,7 +7,7 @@ namespace TinyDotNet.Reflection;
 public class MethodSpec
 {
 
-    private MethodInfo _method;
+    private int _method;
     private byte[] _instantiation;
 
 }

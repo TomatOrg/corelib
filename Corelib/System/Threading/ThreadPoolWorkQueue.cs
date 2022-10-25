@@ -707,8 +707,7 @@ namespace System.Threading
         {
             if (workItem is Task task)
             {
-                // task.ExecuteFromThreadPool(currentThread);
-                throw new NotImplementedException();
+                task.ExecuteFromThreadPool(currentThread);
             }
             else
             {

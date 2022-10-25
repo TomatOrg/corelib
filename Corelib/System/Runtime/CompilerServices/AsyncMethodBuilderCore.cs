@@ -1,24 +1,111 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using System.Reflection;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace System.Runtime.CompilerServices
 {
-    internal static class AsyncMethodBuilderCore
+    /// <summary>Shared helpers for manipulating state related to async state machines.</summary>
+    internal static class AsyncMethodBuilderCore // debugger depends on this exact name
     {
+        /// <summary>Initiates the builder's execution with the associated state machine.</summary>
+        /// <typeparam name="TStateMachine">Specifies the type of the state machine.</typeparam>
+        /// <param name="stateMachine">The state machine instance, passed by reference.</param>
+        [DebuggerStepThrough]
         public static void Start<TStateMachine>(ref TStateMachine stateMachine) where TStateMachine : IAsyncStateMachine
         {
-            // TODO: make sure statemachine is not null
-            stateMachine.MoveNext();
-            // TODO: wrap MoveNext in a try-finally and handle execution context switches
+            if (stateMachine == null) // TStateMachines are generally non-nullable value types, so this check will be elided
+            {
+                ThrowHelper.ThrowArgumentNullException(ExceptionArgument.stateMachine);
+            }
+
+            Thread currentThread = Thread.CurrentThread;
+
+            // Store current ExecutionContext and SynchronizationContext as "previousXxx".
+            // This allows us to restore them and undo any Context changes made in stateMachine.MoveNext
+            // so that they won't "leak" out of the first await.
+            ExecutionContext? previousExecutionCtx = currentThread._executionContext;
+
+            try
+            {
+                stateMachine.MoveNext();
+            }
+            finally
+            {
+                ExecutionContext? currentExecutionCtx = currentThread._executionContext;
+                if (previousExecutionCtx != currentExecutionCtx)
+                {
+                    ExecutionContext.RestoreChangedContextToThread(currentThread, previousExecutionCtx, currentExecutionCtx);
+                }
+            }
         }
 
-        // Legacy function, it can just be a nop I think
         public static void SetStateMachine(IAsyncStateMachine stateMachine, Task? task)
         {
+            if (stateMachine == null)
+            {
+                ThrowHelper.ThrowArgumentNullException(ExceptionArgument.stateMachine);
+            }
+
+            if (task != null)
+            {
+                ThrowHelper.ThrowInvalidOperationException(ExceptionResource.AsyncMethodBuilder_InstanceNotInitialized);
+            }
+
+            // SetStateMachine was originally needed in order to store the boxed state machine reference into
+            // the boxed copy.  Now that a normal box is no longer used, SetStateMachine is also legacy.  We need not
+            // do anything here, and thus assert to ensure we're not calling this from our own implementations.
+            Debug.Fail("SetStateMachine should not be used.");
+        }
+
+        internal static Action CreateContinuationWrapper(Action continuation, Action<Action, Task> invokeAction, Task innerTask) =>
+            new ContinuationWrapper(continuation, invokeAction, innerTask).Invoke;
+
+        /// <summary>This helper routine is targeted by the debugger. Its purpose is to remove any delegate wrappers introduced by
+        /// the framework that the debugger doesn't want to see.</summary>
+        internal static Action TryGetStateMachineForDebugger(Action action) // debugger depends on this exact name/signature
+        {
+            object? target = action.Target;
+            return
+                target is IAsyncStateMachineBox sm ? sm.GetStateMachineObject().MoveNext :
+                target is ContinuationWrapper cw ? TryGetStateMachineForDebugger(cw._continuation) :
+                action;
+        }
+
+        internal static Task? TryGetContinuationTask(Action continuation) =>
+            (continuation.Target is ContinuationWrapper wrapper) ?
+                wrapper._innerTask :           // A wrapped continuation, created by an awaiter
+                continuation.Target as Task;   // The continuation targets a task directly, such as with AsyncStateMachineBox
+
+        /// <summary>
+        /// Logically we pass just an Action (delegate) to a task for its action to 'ContinueWith' when it completes.
+        /// However debuggers and profilers need more information about what that action is. (In particular what
+        /// the action after that is and after that.   To solve this problem we create a 'ContinuationWrapper
+        /// which when invoked just does the original action (the invoke action), but also remembers other information
+        /// (like the action after that (which is also a ContinuationWrapper and thus form a linked list).
+        ///  We also store that task if the action is associate with at task.
+        /// </summary>
+        private sealed class ContinuationWrapper // SOS DumpAsync command depends on this name
+        {
+            private readonly Action<Action, Task> _invokeAction; // This wrapper is an action that wraps another action, this is that Action.
+            internal readonly Action _continuation;              // This is continuation which will happen after m_invokeAction  (and is probably a ContinuationWrapper). SOS DumpAsync command depends on this name.
+            internal readonly Task _innerTask;                   // If the continuation is logically going to invoke a task, this is that task (may be null)
+
+            internal ContinuationWrapper(Action continuation, Action<Action, Task> invokeAction, Task innerTask)
+            {
+                Debug.Assert(continuation != null, "Expected non-null continuation");
+                Debug.Assert(invokeAction != null, "Expected non-null invokeAction");
+                Debug.Assert(innerTask != null, "Expected non-null innerTask");
+
+                _invokeAction = invokeAction;
+                _continuation = continuation;
+                _innerTask = innerTask;
+            }
+
+            internal void Invoke() => _invokeAction(_continuation, _innerTask);
         }
     }
 }
