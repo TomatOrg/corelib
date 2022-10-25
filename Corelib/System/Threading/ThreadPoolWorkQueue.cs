@@ -384,7 +384,7 @@ namespace System.Threading
             }
         }
 
-        internal bool loggingEnabled;
+        // internal bool loggingEnabled;
         private bool _dispatchTimeSensitiveWorkFirst;
         internal readonly ConcurrentQueue<object> workItems = new ConcurrentQueue<object>(); // SOS's ThreadPool command depends on this name
         internal readonly ConcurrentQueue<IThreadPoolWorkItem>? timeSensitiveWorkQueue = new ConcurrentQueue<IThreadPoolWorkItem>();

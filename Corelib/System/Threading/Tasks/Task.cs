@@ -110,7 +110,7 @@ namespace System.Threading.Tasks
     /// </remarks>
     [DebuggerTypeProxy(typeof(SystemThreadingTasks_TaskDebugView))]
     [DebuggerDisplay("Id = {Id}, Status = {Status}, Method = {DebuggerDisplayMethodDescription}")]
-    public class Task : IAsyncResult, IDisposable
+    public class Task : IDisposable
     {
         [ThreadStatic]
         internal static Task? t_currentTask;  // The currently executing task.
@@ -1397,43 +1397,10 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// Gets a <see cref="System.Threading.WaitHandle"/> that can be used to wait for the task to
-        /// complete.
-        /// </summary>
-        /// <remarks>
-        /// Using the wait functionality provided by <see cref="Wait()"/>
-        /// should be preferred over using <see cref="IAsyncResult.AsyncWaitHandle"/> for similar
-        /// functionality.
-        /// </remarks>
-        /// <exception cref="System.ObjectDisposedException">
-        /// The <see cref="Task"/> has been disposed.
-        /// </exception>
-        WaitHandle IAsyncResult.AsyncWaitHandle
-        {
-            // Although a slim event is used internally to avoid kernel resource allocation, this function
-            // forces allocation of a true WaitHandle when called.
-            get
-            {
-                bool isDisposed = (m_stateFlags & (int)TaskStateFlags.Disposed) != 0;
-                if (isDisposed)
-                {
-                    ThrowHelper.ThrowObjectDisposedException(ExceptionResource.Task_ThrowIfDisposed);
-                }
-                return CompletedEvent.WaitHandle;
-            }
-        }
-
-        /// <summary>
         /// Gets the state object supplied when the <see cref="Task">Task</see> was created,
         /// or null if none was supplied.
         /// </summary>
         public object? AsyncState => m_stateObject;
-
-        /// <summary>
-        /// Gets an indication of whether the asynchronous operation completed synchronously.
-        /// </summary>
-        /// <value>true if the asynchronous operation completed synchronously; otherwise, false.</value>
-        bool IAsyncResult.CompletedSynchronously => false;
 
         /// <summary>
         /// Provides access to the TaskScheduler responsible for executing this Task.
@@ -1456,36 +1423,6 @@ namespace System.Threading.Tasks
 
         /// <summary>Gets a task that's already been completed successfully.</summary>
         public static Task CompletedTask => s_cachedCompleted;
-
-        /// <summary>
-        /// Provides an event that can be used to wait for completion.
-        /// Only called by IAsyncResult.AsyncWaitHandle, which means that we really do need to instantiate a completion event.
-        /// </summary>
-        internal ManualResetEventSlim CompletedEvent
-        {
-            get
-            {
-                ContingentProperties contingentProps = EnsureContingentPropertiesInitialized();
-                if (contingentProps.m_completionEvent == null)
-                {
-                    bool wasCompleted = IsCompleted;
-                    ManualResetEventSlim newMre = new ManualResetEventSlim(wasCompleted);
-                    if (Interlocked.CompareExchange(ref contingentProps.m_completionEvent, newMre, null) != null)
-                    {
-                        // Someone else already set the value, so we will just close the event right away.
-                        newMre.Dispose();
-                    }
-                    else if (!wasCompleted && IsCompleted)
-                    {
-                        // We published the event as unset, but the task has subsequently completed.
-                        // Set the event's state properly so that callers don't deadlock.
-                        newMre.Set();
-                    }
-                }
-
-                return contingentProps.m_completionEvent;
-            }
-        }
 
         /// <summary>
         /// Whether an exception has been stored into the task.

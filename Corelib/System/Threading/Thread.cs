@@ -130,6 +130,7 @@ public sealed class Thread
                 3 => ThreadState.WaitSleepJoin,
                 4 => ThreadState.Suspended,
                 5 => ThreadState.Stopped,
+                _ => throw new ArgumentOutOfRangeException(nameof(state))
             };
             
             // we can track the suspend request state

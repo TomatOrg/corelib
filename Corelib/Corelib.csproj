@@ -7,6 +7,7 @@
         <DisableImplicitNamespaceImports_DotNet>true</DisableImplicitNamespaceImports_DotNet>
         <RootNamespace />
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <Nullable>annotations</Nullable>
     </PropertyGroup>
 
     <Target Name="CustomizeReferences" BeforeTargets="BeforeCompile" AfterTargets="FindReferenceAssembliesForReferences">
