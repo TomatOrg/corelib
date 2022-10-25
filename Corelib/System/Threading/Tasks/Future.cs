@@ -54,7 +54,7 @@ namespace System.Threading.Tasks
     /// and may be used from multiple threads concurrently.
     /// </para>
     /// </remarks>
-    [DebuggerTypeProxy(typeof(SystemThreadingTasks_FutureDebugView<>))]
+    // [DebuggerTypeProxy(typeof(SystemThreadingTasks_FutureDebugView<>))]
     [DebuggerDisplay("Id = {Id}, Status = {Status}, Method = {DebuggerDisplayMethodDescription}, Result = {DebuggerDisplayResultDescription}")]
     public class Task<TResult> : Task
     {

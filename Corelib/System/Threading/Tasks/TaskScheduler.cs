@@ -30,7 +30,7 @@ namespace System.Threading.Tasks
     /// </para>
     /// </remarks>
     [DebuggerDisplay("Id={Id}")]
-    [DebuggerTypeProxy(typeof(SystemThreadingTasks_TaskSchedulerDebugView))]
+    // [DebuggerTypeProxy(typeof(SystemThreadingTasks_TaskSchedulerDebugView))]
     public abstract class TaskScheduler
     {
         ////////////////////////////////////////////////////////////

@@ -35,7 +35,7 @@ namespace System.Threading
     // We partition the timers across multiple TimerQueues, each with its own lock and set of short/long lists,
     // in order to minimize contention when lots of threads are concurrently creating and destroying timers often.
     [DebuggerDisplay("Count = {CountForDebugger}")]
-    [DebuggerTypeProxy(typeof(TimerQueueDebuggerTypeProxy))]
+    // [DebuggerTypeProxy(typeof(TimerQueueDebuggerTypeProxy))]
     internal sealed partial class TimerQueue
     {
         #region Shared TimerQueue instances
@@ -438,7 +438,7 @@ namespace System.Threading
 
     // A timer in our TimerQueue.
     [DebuggerDisplay("{DisplayString,nq}")]
-    [DebuggerTypeProxy(typeof(TimerDebuggerTypeProxy))]
+    // [DebuggerTypeProxy(typeof(TimerDebuggerTypeProxy))]
     internal sealed class TimerQueueTimer : IThreadPoolWorkItem
     {
         // The associated timer queue.
@@ -797,7 +797,7 @@ namespace System.Threading
     }
 
     [DebuggerDisplay("{DisplayString,nq}")]
-    [DebuggerTypeProxy(typeof(TimerQueueTimer.TimerDebuggerTypeProxy))]
+    // [DebuggerTypeProxy(typeof(TimerQueueTimer.TimerDebuggerTypeProxy))]
     public sealed class Timer : IDisposable, IAsyncDisposable
     {
         internal const uint MaxSupportedTimeout = 0xfffffffe;

@@ -108,7 +108,7 @@ namespace System.Threading.Tasks
     /// InternalWait method serves a potential marker for when a Task is entering a wait operation.
     /// </para>
     /// </remarks>
-    [DebuggerTypeProxy(typeof(SystemThreadingTasks_TaskDebugView))]
+    // [DebuggerTypeProxy(typeof(SystemThreadingTasks_TaskDebugView))]
     [DebuggerDisplay("Id = {Id}, Status = {Status}, Method = {DebuggerDisplayMethodDescription}")]
     public class Task : IDisposable
     {
