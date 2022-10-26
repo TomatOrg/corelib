@@ -840,8 +840,7 @@ namespace System
         {
             get
             {
-                NativeHost.GetRtcTime(out var year, out var month, out var day, out var hour, out var minute, out var second);
-                return new DateTime(year, month, day, hour, minute, second, DateTimeKind.Utc);
+                return new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             }
         }
 
