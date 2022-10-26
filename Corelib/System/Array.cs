@@ -48,23 +48,21 @@ public class Array
 
     #region Clear
 
-    public static void Clear(Array array)
+    public static void Clear<T>(T[] array)
     {
-        if (array == null) throw new ArgumentNullException(nameof(array));
-        ClearInternal(array, 0, array.Length);
+        if (array == null)
+            throw new ArgumentNullException(nameof(array));
+        
+        array.AsSpan().Clear();
     }
 
-    public static void Clear(Array array, int index, int length)
+    public static void Clear<T>(T[] array, int index, int length)
     {
-        if (array == null) throw new ArgumentNullException(nameof(array));
-        if (index >= array.Length) throw new ArgumentOutOfRangeException(nameof(index));
-        if (length < 0) throw new ArgumentOutOfRangeException(nameof(length));
-        if (index + length > array.Length) throw new ArgumentOutOfRangeException(nameof(index));
-        ClearInternal(array, index, length);
+        if (array == null)
+            throw new ArgumentNullException(nameof(array));
+        
+        array.AsSpan(index, length).Clear();
     }
-
-    [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    private static extern void ClearInternal(Array array, int index, int length);
 
     #endregion
 
@@ -550,7 +548,7 @@ public class Array
 
         public void Clear()
         {
-            Array.Clear(this);
+            Array.Clear(Unsafe.As<T[]>(this));
         }
 
         public bool Contains(T item)
