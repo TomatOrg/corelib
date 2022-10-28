@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using TinyDotNet.Reflection;
@@ -25,6 +27,7 @@ public class Assembly
     private byte[][] _definedTypeSpecs;
     private MemberReference[] _definedMemberRefs;
     private MethodSpec[] _definedMemberSpecs;
+    private ManifestResourceInfo[] _definedManifestResources;
         
     private Type[] _importedTypes;
         
@@ -43,6 +46,49 @@ public class Assembly
     
     [MethodImpl(MethodCodeType = MethodCodeType.Native)]
     extern ~Assembly();
+
+    public ManifestResourceInfo? GetManifestResourceInfo(string resourceName)
+    {
+        if (resourceName == null)
+            throw new ArgumentNullException();
+        if (resourceName.Length == 0)
+            throw new ArgumentException();
+        
+        foreach (var resource in _definedManifestResources)
+        {
+            if (resource.FileName == resourceName)
+            {
+                return resource;
+            }
+        }
+        
+        return null;
+    }
+
+    public string[] GetManifestResourceNames()
+    {
+        var lst = new List<string>();
+        foreach (var resource in _definedManifestResources)
+        {
+            lst.Add(resource.FileName);
+        }
+        return lst.ToArray();
+    }
+
+    public Stream? GetManifestResourceStream(string name)
+    {
+        var resource = GetManifestResourceInfo(name);
+        if (resource == null)
+            return null;
+        
+        // we only support embedded resources
+        // TODO: support non-embedded?
+        if ((resource.ResourceLocation & ResourceLocation.Embedded) == 0)
+            throw new FileLoadException();
+
+        // get the stream
+        return resource.AsStream();
+    }
     
     public static Assembly Load(byte[] rawAssembly)
     {
