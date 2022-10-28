@@ -110,6 +110,22 @@ public readonly unsafe struct Memory<T>
     }
 
     /// <summary>
+    /// Defines an implicit conversion of an array to a <see cref="Memory{T}"/>
+    /// </summary>
+    public static implicit operator Memory<T>(T[]? array) => new Memory<T>(array);
+
+    /// <summary>
+    /// Defines an implicit conversion of a <see cref="ArraySegment{T}"/> to a <see cref="Memory{T}"/>
+    /// </summary>
+    public static implicit operator Memory<T>(ArraySegment<T> segment) => new Memory<T>(segment.Array, segment.Offset, segment.Count);
+
+    /// <summary>
+    /// Defines an implicit conversion of a <see cref="Memory{T}"/> to a <see cref="ReadOnlyMemory{T}"/>
+    /// </summary>
+    public static implicit operator ReadOnlyMemory<T>(Memory<T> memory) =>
+        Unsafe.As<Memory<T>, ReadOnlyMemory<T>>(ref memory);
+
+    /// <summary>
     /// Forms a slice out of the given memory, beginning at 'start'.
     /// </summary>
     /// <param name="start">The index at which to begin this slice.</param>

@@ -286,14 +286,14 @@ namespace System
             throw GetArgumentOutOfRangeException(argument, paramNumber, resource);
         }
 
-        // [DoesNotReturn]
-        // internal static void ThrowEndOfFileException()
-        // {
-        //     throw CreateEndOfFileException();
-        // }
+        [DoesNotReturn]
+        internal static void ThrowEndOfFileException()
+        {
+            throw CreateEndOfFileException();
+        }
 
-        // internal static Exception CreateEndOfFileException() =>
-        //     new EndOfStreamException(SR.IO_EOF_ReadBeyondEOF);
+        internal static Exception CreateEndOfFileException() =>
+            new EndOfStreamException("Unable to read beyond the end of the stream.");
 
         [DoesNotReturn]
         internal static void ThrowInvalidOperationException()

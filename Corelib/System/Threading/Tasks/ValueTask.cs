@@ -51,7 +51,7 @@ namespace System.Threading.Tasks
     /// </item>
     /// </list>
     /// </remarks>
-    // [AsyncMethodBuilder(typeof(AsyncValueTaskMethodBuilder))]
+    [AsyncMethodBuilder(typeof(AsyncValueTaskMethodBuilder))]
     [StructLayout(LayoutKind.Auto)]
     public readonly struct ValueTask : IEquatable<ValueTask>
     {
@@ -442,7 +442,7 @@ namespace System.Threading.Tasks
     /// </item>
     /// </list>
     /// </remarks>
-    // [AsyncMethodBuilder(typeof(AsyncValueTaskMethodBuilder<>))]
+    [AsyncMethodBuilder(typeof(AsyncValueTaskMethodBuilder<>))]
     [StructLayout(LayoutKind.Auto)]
     public readonly struct ValueTask<TResult> : IEquatable<ValueTask<TResult>>
     {

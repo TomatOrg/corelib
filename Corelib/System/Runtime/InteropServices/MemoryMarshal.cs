@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 namespace System.Runtime.InteropServices;
@@ -148,19 +149,43 @@ public static class MemoryMarshal
     /// <remarks>The lifetime of the returned span will not be validated for safety by span-aware languages.</remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static ReadOnlySpan<T> CreateReadOnlySpan<T>(ref T reference, int length) => new ReadOnlySpan<T>(ref reference, length);
+
+    // TODO: should we expose this? it is technically turning readonly thing into a non-readonly thing...
+    /// <summary>
+    /// Get an array segment from the underlying memory.
+    /// If unable to get the array segment, return false with a default array segment.
+    /// </summary>
+    internal static unsafe bool TryGetArray<T>(ReadOnlyMemory<T> memory, out ArraySegment<T> segment)
+    {
+        if (memory.Length == 0)
+        {
+            segment = ArraySegment<T>.Empty;
+            return true;
+        }
+        
+        if (memory._object is T[] array)
+        {
+            var offset = (int)(((long)memory._pointer - (long)array.GetDataPtr()) / Unsafe.SizeOf<T>());
+            segment = new ArraySegment<T>(array, offset, memory.Length);
+            return true;
+        }
+
+        segment = default;
+        return false;
+    }
     
-    // /// <summary>
-    // /// Creates an <see cref="IEnumerable{T}"/> view of the given <paramref name="memory" /> to allow
-    // /// the <paramref name="memory" /> to be used in existing APIs that take an <see cref="IEnumerable{T}"/>.
-    // /// </summary>
-    // /// <typeparam name="T">The element type of the <paramref name="memory" />.</typeparam>
-    // /// <param name="memory">The ReadOnlyMemory to view as an <see cref="IEnumerable{T}"/></param>
-    // /// <returns>An <see cref="IEnumerable{T}"/> view of the given <paramref name="memory" /></returns>
-    // public static IEnumerable<T> ToEnumerable<T>(ReadOnlyMemory<T> memory)
-    // {
-    //     for (int i = 0; i < memory.Length; i++)
-    //         yield return memory.Span[i];
-    // }
+    /// <summary>
+    /// Creates an <see cref="IEnumerable{T}"/> view of the given <paramref name="memory" /> to allow
+    /// the <paramref name="memory" /> to be used in existing APIs that take an <see cref="IEnumerable{T}"/>.
+    /// </summary>
+    /// <typeparam name="T">The element type of the <paramref name="memory" />.</typeparam>
+    /// <param name="memory">The ReadOnlyMemory to view as an <see cref="IEnumerable{T}"/></param>
+    /// <returns>An <see cref="IEnumerable{T}"/> view of the given <paramref name="memory" /></returns>
+    public static IEnumerable<T> ToEnumerable<T>(ReadOnlyMemory<T> memory)
+    {
+        for (int i = 0; i < memory.Length; i++)
+            yield return memory.Span[i];
+    }
     
     /// <summary>
     /// Reads a structure of type T out of a read-only span of bytes.

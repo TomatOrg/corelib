@@ -7,6 +7,7 @@ public class InvalidOperationException : SystemException
     internal const string EnumNotStarted = "Enumeration has not started. Call MoveNext.";
     internal const string EnumEnded = "Enumeration already finished.";
     internal const string ReadOnly = "Instance is read-only.";
+    internal const string TimeoutsNotSupported = "Timeouts are not supported on this stream.";
 
     internal const string CollectionCorrupted =
         "A prior operation on this collection was interrupted by an exception. Collection's state is no longer trusted.";

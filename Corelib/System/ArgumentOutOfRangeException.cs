@@ -26,6 +26,7 @@ public class ArgumentOutOfRangeException : ArgumentException
     internal const string NeedPosNum = "Positive number required.";
     internal const string TimeoutTooLarge = "Time-out interval must be less than 2^32-2.";
     internal const string PeriodTooLarge = "Period must be less than 2^32-2.";
+    internal const string StreamLength = "Stream length must be non-negative and less than 2^31 - 1 - origin.";
     
     internal const string InvalidHighSurrogate =
         "A valid high surrogate character is between 0xd800 and 0xdbff, inclusive.";
