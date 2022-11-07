@@ -12,7 +12,7 @@ namespace System.Buffers.Binary
     /// <remarks>
     /// Use these helpers when you need to read specific endianness.
     /// </remarks>
-    public static class BinaryPrimitives
+    public static partial class BinaryPrimitives
     {
         /// <summary>
         /// This is a no-op and added only for consistency.

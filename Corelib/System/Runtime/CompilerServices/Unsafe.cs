@@ -202,9 +202,21 @@ public static unsafe class Unsafe
         As<byte, T>(ref destination) = value;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining, MethodCodeType = MethodCodeType.Runtime)]
-    internal static extern ref T AsRef<T>(void* source);
+    /// <summary>
+    /// Reinterprets the given location as a reference to a value of type <typeparamref name="T"/>.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static ref T AsRef<T>(void* source)
+    {
+        return ref As<byte, T>(ref *(byte*)source);
+    }
 
+    /// <summary>
+    /// Reinterprets the given location as a reference to a value of type <typeparamref name="T"/>.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining, MethodCodeType = MethodCodeType.Runtime)]
+    public static extern ref T AsRef<T>(in T source);
+    
     /// <summary>
     /// Determines the byte offset from origin to target from the given references.
     /// </summary>
