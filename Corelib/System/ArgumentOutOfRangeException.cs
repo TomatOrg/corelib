@@ -27,6 +27,8 @@ public class ArgumentOutOfRangeException : ArgumentException
     internal const string TimeoutTooLarge = "Time-out interval must be less than 2^32-2.";
     internal const string PeriodTooLarge = "Period must be less than 2^32-2.";
     internal const string StreamLength = "Stream length must be non-negative and less than 2^31 - 1 - origin.";
+    internal const string GetByteCountOverflow = "Too many characters. The resulting number of bytes is larger than what can be returned as an int.";
+    internal const string GetCharCountOverflow = "Too many bytes. The resulting number of chars is larger than what can be returned as an int.";
     
     internal const string InvalidHighSurrogate =
         "A valid high surrogate character is between 0xd800 and 0xdbff, inclusive.";

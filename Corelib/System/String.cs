@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace System;
 
@@ -53,6 +54,31 @@ public partial class String : IEnumerable<char>, IComparable<string?>, IEquatabl
     internal static string FastAllocateString(int length)
     {
         return new string(length);
+    }
+
+    internal static unsafe string CreateStringFromEncoding(byte* bytes, int byteLength, Encoding encoding)
+    {
+        Debug.Assert(bytes != null);
+        Debug.Assert(byteLength >= 0);
+
+        // Get our string length
+        int stringLength = encoding.GetCharCount(bytes, byteLength);
+        Debug.Assert(stringLength >= 0, "stringLength >= 0");
+
+        // They gave us an empty string if they needed one
+        // 0 bytelength might be possible if there's something in an encoder
+        if (stringLength == 0)
+            return Empty;
+
+        string s = FastAllocateString(stringLength);
+        fixed (char* pTempChars = &s._firstChar)
+        {
+            int doubleCheck = encoding.GetChars(bytes, byteLength, pTempChars, stringLength);
+            Debug.Assert(stringLength == doubleCheck,
+                "Expected encoding.GetChars to return same length as encoding.GetCharCount");
+        }
+
+        return s;
     }
     
     public String(char[] chars)

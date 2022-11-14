@@ -6,7 +6,8 @@ public class NotSupportedException : SystemException
     internal const string ReadOnlyCollection = "Collection is read-only.";
     internal const string CannotCallEqualsOnSpan = "Equals() on Span and ReadOnlySpan is not supported. Use operator== instead.";
     internal const string CannotCallGetHashCodeOnSpan = "GetHashCode() on Span and ReadOnlySpan is not supported.";
-
+    internal const string UnseekableStream = "Stream does not support seeking.";
+    
     public NotSupportedException()
         : base("Specified method is not supported.")
     {

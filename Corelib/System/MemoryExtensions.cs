@@ -102,6 +102,52 @@ public static partial class MemoryExtensions
         return new ReadOnlyMemory<char>(text, ref Unsafe.Add(ref text.GetRawStringData(), (nint)(uint)start /* force zero-extension */), length);
     }
     
+    /// <summary>
+    /// Creates a new memory over the portion of the target array.
+    /// </summary>
+    public static Memory<T> AsMemory<T>(this ArraySegment<T> segment) => new Memory<T>(segment.Array, segment.Offset, segment.Count);
+
+    /// <summary>
+    /// Creates a new memory over the portion of the target array beginning
+    /// at 'start' index and ending at 'end' index (exclusive).
+    /// </summary>
+    /// <param name="segment">The target array.</param>
+    /// <param name="start">The index at which to begin the memory.</param>
+    /// <remarks>Returns default when <paramref name="segment"/> is null.</remarks>
+    /// <exception cref="System.ArrayTypeMismatchException">Thrown when <paramref name="segment"/> is covariant and array's type is not exactly T[].</exception>
+    /// <exception cref="System.ArgumentOutOfRangeException">
+    /// Thrown when the specified <paramref name="start"/> or end index is not in the range (&lt;0 or &gt;segment.Count).
+    /// </exception>
+    public static Memory<T> AsMemory<T>(this ArraySegment<T> segment, int start)
+    {
+        if (((uint)start) > (uint)segment.Count)
+            ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument.start);
+
+        return new Memory<T>(segment.Array, segment.Offset + start, segment.Count - start);
+    }
+
+    /// <summary>
+    /// Creates a new memory over the portion of the target array beginning
+    /// at 'start' index and ending at 'end' index (exclusive).
+    /// </summary>
+    /// <param name="segment">The target array.</param>
+    /// <param name="start">The index at which to begin the memory.</param>
+    /// <param name="length">The number of items in the memory.</param>
+    /// <remarks>Returns default when <paramref name="segment"/> is null.</remarks>
+    /// <exception cref="System.ArrayTypeMismatchException">Thrown when <paramref name="segment"/> is covariant and array's type is not exactly T[].</exception>
+    /// <exception cref="System.ArgumentOutOfRangeException">
+    /// Thrown when the specified <paramref name="start"/> or end index is not in the range (&lt;0 or &gt;segment.Count).
+    /// </exception>
+    public static Memory<T> AsMemory<T>(this ArraySegment<T> segment, int start, int length)
+    {
+        if (((uint)start) > (uint)segment.Count)
+            ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument.start);
+        if (((uint)length) > (uint)(segment.Count - start))
+            ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument.length);
+
+        return new Memory<T>(segment.Array, segment.Offset + start, length);
+    }
+
     #endregion
 
     #region AsSpan

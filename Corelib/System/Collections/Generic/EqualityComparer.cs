@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 
 namespace System.Collections.Generic;
 
-internal abstract class EqualityComparer<T> : IEqualityComparer<T>
+public abstract class EqualityComparer<T> : IEqualityComparer<T>
 {
     // To minimize generic instantiation overhead of creating the comparer per type, we keep the generic portion of the code as small
     // as possible and define most of the creation logic in a non-generic class.
@@ -265,7 +265,6 @@ internal sealed partial class ByteEqualityComparer : EqualityComparer<byte>
         GetType().GetHashCode();
 }
 
-// Needs to be public to support binary serialization compatibility
 internal sealed class EnumEqualityComparer<T> : EqualityComparer<T>
     where T : struct, Enum
 {

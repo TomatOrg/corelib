@@ -12,6 +12,11 @@ public class ArgumentException : SystemException
     internal const string EmptyTaskList = "The tasks argument contains no tasks.";
     internal const string NullTask = "The tasks argument included a null value.";
     internal const string DestinationTooShort = "Destination is too short.";
+    internal const string ConversionOverflow = "Conversion buffer overflow.";
+    internal const string InvalidCharSequenceNoIndex = "String contains invalid Unicode code points.";
+    
+    internal const string FallbackBufferNotEmpty =
+        "Cannot change fallback when buffer is not empty. Previous Convert() call left data in the fallback buffer.";
     
     internal const string InvalidOffLen =
         "Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.";
