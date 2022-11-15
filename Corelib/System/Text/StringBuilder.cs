@@ -1033,27 +1033,27 @@ namespace System.Text
             return this;
         }
 
-        // TODO: public StringBuilder Append(sbyte value) => AppendSpanFormattable(value);
-        //
-        // TODO: public StringBuilder Append(byte value) => AppendSpanFormattable(value);
-        //
-        // TODO: public StringBuilder Append(short value) => AppendSpanFormattable(value);
-        //
-        // TODO: public StringBuilder Append(int value) => AppendSpanFormattable(value);
-        //
-        // TODO: public StringBuilder Append(long value) => AppendSpanFormattable(value);
-        //
-        // TODO: public StringBuilder Append(float value) => AppendSpanFormattable(value);
-        //
-        // TODO: public StringBuilder Append(double value) => AppendSpanFormattable(value);
+        public StringBuilder Append(sbyte value) => AppendSpanFormattable(value);
+        
+        public StringBuilder Append(byte value) => AppendSpanFormattable(value);
+        
+        public StringBuilder Append(short value) => AppendSpanFormattable(value);
+        
+        public StringBuilder Append(int value) => AppendSpanFormattable(value);
+        
+        public StringBuilder Append(long value) => AppendSpanFormattable(value);
+        
+        public StringBuilder Append(float value) => AppendSpanFormattable(value);
+        
+        public StringBuilder Append(double value) => AppendSpanFormattable(value);
 
         // TODO: public StringBuilder Append(decimal value) => AppendSpanFormattable(value);
 
-        // TODO: public StringBuilder Append(ushort value) => AppendSpanFormattable(value);
-        //
-        // TODO: public StringBuilder Append(uint value) => AppendSpanFormattable(value);
-        //
-        // TODO: public StringBuilder Append(ulong value) => AppendSpanFormattable(value);
+        public StringBuilder Append(ushort value) => AppendSpanFormattable(value);
+        
+        public StringBuilder Append(uint value) => AppendSpanFormattable(value);
+        
+        public StringBuilder Append(ulong value) => AppendSpanFormattable(value);
 
         private StringBuilder AppendSpanFormattable<T>(T value) where T : ISpanFormattable
         {

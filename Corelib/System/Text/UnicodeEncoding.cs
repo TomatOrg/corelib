@@ -403,11 +403,7 @@ namespace System.Text
 #if FASTLOOP
                     // If endianess is backwards then each pair of bytes would be backwards.
                     if ((bigEndian ^ BitConverter.IsLittleEndian) &&
-#if TARGET_64BIT
                         (unchecked((long)chars) & 7) == 0 &&
-#else
-                        (unchecked((int)chars) & 3) == 0 &&
-#endif
                         charLeftOver == 0)
                     {
                         // Need -1 to check 2 at a time.  If we have an even #, longChars will go
@@ -691,11 +687,7 @@ namespace System.Text
 #if FASTLOOP
                     // If endianess is backwards then each pair of bytes would be backwards.
                     if ((bigEndian ^ BitConverter.IsLittleEndian) &&
-#if TARGET_64BIT
                         (unchecked((long)chars) & 7) == 0 &&
-#else
-                        (unchecked((int)chars) & 3) == 0 &&
-#endif
                         charLeftOver == 0)
                     {
                         // Need -1 to check 2 at a time.  If we have an even #, longChars will go
@@ -1043,11 +1035,7 @@ namespace System.Text
                 // That'll hurt if we're unaligned because we'll always test but never be aligned
 #if FASTLOOP
                 if ((bigEndian ^ BitConverter.IsLittleEndian) &&
-#if TARGET_64BIT
                     (unchecked((long)bytes) & 7) == 0 &&
-#else
-                    (unchecked((int)bytes) & 3) == 0 &&
-#endif // TARGET_64BIT
                     lastByte == -1 && lastChar == 0)
                 {
                     // Need -1 to check 2 at a time.  If we have an even #, longBytes will go
@@ -1364,11 +1352,7 @@ namespace System.Text
                 // That'll hurt if we're unaligned because we'll always test but never be aligned
 #if FASTLOOP
                 if ((bigEndian ^ BitConverter.IsLittleEndian) &&
-#if TARGET_64BIT
                     (unchecked((long)chars) & 7) == 0 &&
-#else
-                    (unchecked((int)chars) & 3) == 0 &&
-#endif
                     lastByte == -1 && lastChar == 0)
                 {
                     // Need -1 to check 2 at a time.  If we have an even #, longChars will go

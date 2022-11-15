@@ -6,14 +6,24 @@ internal static class Buffer
 {
 
     [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    public static extern void Memmove(ref byte destination, ref byte source, nuint elementCount);
+    internal static extern void Memmove(ref byte destination, ref byte source, nuint elementCount);
 
-    public static void Memmove(ref char destination, ref char source, nuint elementCount)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static void Memmove<T>(ref T destination, ref T source, nuint elementCount)
+        where T : unmanaged
     {
-        Memmove(ref Unsafe.As<char, byte>(ref destination), ref Unsafe.As<char, byte>(ref source), elementCount * sizeof(char));
+        Memmove(
+            ref Unsafe.As<T, byte>(ref destination),
+            ref Unsafe.As<T, byte>(ref source),
+            elementCount * (nuint)Unsafe.SizeOf<T>());
+    }
+    
+    internal static unsafe void ZeroMemory(byte* dest, nuint len)
+    {
+        SpanHelpers.ClearWithoutReferences(ref *dest, len);
     }
 
     [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    public static extern void _ZeroMemory(ref byte b, nuint byteLength);
+    internal static extern void _ZeroMemory(ref byte b, nuint byteLength);
 
 }

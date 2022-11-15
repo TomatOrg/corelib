@@ -13,6 +13,7 @@ public class FormatException : SystemException
     internal const string GuidEndBrace = "Could not find the ending brace.";
     internal const string GuidHexPrefix = "Expected 0x prefix.";
     internal const string GuidInvalidChar = "Guid string should only contain hexadecimal characters.";
+    internal const string TooLarge = "The value is too large to be represented by this format specifier.";
     
     internal const string GuidComma =
         "Could not find a comma, or the length between the previous token and the comma was zero (i.e., '0x,'etc.).";

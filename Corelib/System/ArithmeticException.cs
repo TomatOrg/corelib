@@ -5,7 +5,9 @@ namespace System;
 [StructLayout(LayoutKind.Sequential)]
 public class ArithmeticException : SystemException
 {
-        
+
+    internal const string NaN = "Function does not accept floating point Not-a-Number values.";
+    
     public ArithmeticException()
         : base("Overflow or underflow in the arithmetic operation.")
     {

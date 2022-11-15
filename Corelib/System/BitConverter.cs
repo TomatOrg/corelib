@@ -748,7 +748,7 @@ namespace System
         /// <param name="value">The number to convert.</param>
         /// <returns>A 64-bit signed integer whose bits are identical to <paramref name="value"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static long DoubleToInt64Bits(double value)
+        public static unsafe long DoubleToInt64Bits(double value)
         {
             // Workaround for https://github.com/dotnet/runtime/issues/11413
             // if (Sse2.X64.IsSupported)
@@ -757,7 +757,7 @@ namespace System
             //     return Sse2.X64.ConvertToInt64(vec);
             // }
 
-            return Unsafe.As<double, long>(ref value);
+            return *((long*)&value);
         }
 
         /// <summary>
@@ -766,7 +766,7 @@ namespace System
         /// <param name="value">The number to convert.</param>
         /// <returns>A double-precision floating point number whose bits are identical to <paramref name="value"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static double Int64BitsToDouble(long value)
+        public static unsafe double Int64BitsToDouble(long value)
         {
             // Workaround for https://github.com/dotnet/runtime/issues/11413
             // if (Sse2.X64.IsSupported)
@@ -775,7 +775,7 @@ namespace System
             //     return vec.ToScalar();
             // }
 
-            return Unsafe.As<long, double>(ref value);
+            return *((double*)&value);
         }
 
         /// <summary>
@@ -784,7 +784,7 @@ namespace System
         /// <param name="value">The number to convert.</param>
         /// <returns>A 32-bit signed integer whose bits are identical to <paramref name="value"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int SingleToInt32Bits(float value)
+        public static unsafe int SingleToInt32Bits(float value)
         {
             // Workaround for https://github.com/dotnet/runtime/issues/11413
             // if (Sse2.IsSupported)
@@ -793,7 +793,7 @@ namespace System
             //     return Sse2.ConvertToInt32(vec);
             // }
 
-            return Unsafe.As<float, int>(ref value);
+            return *((int*)&value);
         }
 
         /// <summary>
@@ -802,7 +802,7 @@ namespace System
         /// <param name="value">The number to convert.</param>
         /// <returns>A single-precision floating point number whose bits are identical to <paramref name="value"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float Int32BitsToSingle(int value)
+        public static unsafe float Int32BitsToSingle(int value)
         {
             // Workaround for https://github.com/dotnet/runtime/issues/11413
             // if (Sse2.IsSupported)
@@ -810,7 +810,8 @@ namespace System
             //     Vector128<float> vec = Vector128.CreateScalarUnsafe(value).AsSingle();
             //     return vec.ToScalar();
             // }
-            return Unsafe.As<int, float>(ref value);
+            
+            return *((float*)&value);
         }
 
         // /// <summary>

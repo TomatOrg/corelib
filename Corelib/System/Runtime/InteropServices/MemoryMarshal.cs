@@ -163,6 +163,15 @@ public static class MemoryMarshal
     /// <remarks>The lifetime of the returned span will not be validated for safety by span-aware languages.</remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static ReadOnlySpan<T> CreateReadOnlySpan<T>(ref T reference, int length) => new ReadOnlySpan<T>(ref reference, length);
+    
+    /// <summary>Creates a new read-only span for a null-terminated string.</summary>
+    /// <param name="value">The pointer to the null-terminated string of characters.</param>
+    /// <returns>A read-only span representing the specified null-terminated string, or an empty span if the pointer is null.</returns>
+    /// <remarks>The returned span does not include the null terminator.</remarks>
+    /// <exception cref="ArgumentException">The string is longer than <see cref="int.MaxValue"/>.</exception>
+    internal static unsafe ReadOnlySpan<char> CreateReadOnlySpanFromNullTerminated(char* value) =>
+        value != null ? new ReadOnlySpan<char>(value, string.wcslen(value)) :
+            default;
 
     // TODO: should we expose this? it is technically turning readonly thing into a non-readonly thing...
     /// <summary>

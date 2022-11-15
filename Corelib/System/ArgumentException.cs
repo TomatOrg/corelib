@@ -14,6 +14,10 @@ public class ArgumentException : SystemException
     internal const string DestinationTooShort = "Destination is too short.";
     internal const string ConversionOverflow = "Conversion buffer overflow.";
     internal const string InvalidCharSequenceNoIndex = "String contains invalid Unicode code points.";
+    internal const string InvalidNumberStyles = "An undefined NumberStyles value is being used.";
+
+    internal const string InvalidHexStyle =
+        "With the AllowHexSpecifier bit set in the enum bit field, the only other valid bits that can be combined into the enum value must be a subset of those in HexNumber.";
     
     internal const string FallbackBufferNotEmpty =
         "Cannot change fallback when buffer is not empty. Previous Convert() call left data in the fallback buffer.";

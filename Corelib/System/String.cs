@@ -120,6 +120,26 @@ public partial class String : IEnumerable<char>, IComparable<string?>, IEquatabl
         return new CharEnumerator(this);
     }
     
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static unsafe int wcslen(char* ptr)
+    {
+        // IndexOf processes memory in aligned chunks, and thus it won't crash even if it accesses memory beyond the null terminator.
+        // This IndexOf behavior is an implementation detail of the runtime and callers outside System.Private.CoreLib must not depend on it.
+        int length = SpanHelpers.IndexOf(ref *ptr, '\0', int.MaxValue);
+        if (length < 0)
+        {
+            ThrowMustBeNullTerminatedString();
+        }
+
+        return length;
+    }
+    
+    [DoesNotReturn]
+    private static void ThrowMustBeNullTerminatedString()
+    {
+        throw new ArgumentException("The string must be null-terminated.");
+    }
+
     public static string Create<TState>(int length, TState state, Buffers.Action.SpanAction<char, TState> action)
     {
         if (action == null)

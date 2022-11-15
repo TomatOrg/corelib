@@ -1735,25 +1735,25 @@ namespace System
         //     return true;
         // }
 
-        // internal static double ParseDouble(ReadOnlySpan<char> value, NumberStyles styles, NumberFormatInfo info)
-        // {
-        //     if (!TryParseDouble(value, styles, info, out double result))
-        //     {
-        //         ThrowOverflowOrFormatException(ParsingStatus.Failed);
-        //     }
-        //
-        //     return result;
-        // }
-        //
-        // internal static float ParseSingle(ReadOnlySpan<char> value, NumberStyles styles, NumberFormatInfo info)
-        // {
-        //     if (!TryParseSingle(value, styles, info, out float result))
-        //     {
-        //         ThrowOverflowOrFormatException(ParsingStatus.Failed);
-        //     }
-        //
-        //     return result;
-        // }
+        internal static double ParseDouble(ReadOnlySpan<char> value, NumberStyles styles, NumberFormatInfo info)
+        {
+            if (!TryParseDouble(value, styles, info, out double result))
+            {
+                ThrowOverflowOrFormatException(ParsingStatus.Failed);
+            }
+        
+            return result;
+        }
+        
+        internal static float ParseSingle(ReadOnlySpan<char> value, NumberStyles styles, NumberFormatInfo info)
+        {
+            if (!TryParseSingle(value, styles, info, out float result))
+            {
+                ThrowOverflowOrFormatException(ParsingStatus.Failed);
+            }
+        
+            return result;
+        }
 
         // internal static Half ParseHalf(ReadOnlySpan<char> value, NumberStyles styles, NumberFormatInfo info)
         // {
@@ -1787,67 +1787,67 @@ namespace System
 
         internal static bool SpanStartsWith(ReadOnlySpan<char> span, char c) => !span.IsEmpty && span[0] == c;
 
-        // internal static unsafe bool TryParseDouble(ReadOnlySpan<char> value, NumberStyles styles, NumberFormatInfo info, out double result)
-        // {
-        //     byte* pDigits = stackalloc byte[DoubleNumberBufferLength];
-        //     NumberBuffer number = new NumberBuffer(NumberBufferKind.FloatingPoint, pDigits, DoubleNumberBufferLength);
-        //
-        //     if (!TryStringToNumber(value, styles, ref number, info))
-        //     {
-        //         ReadOnlySpan<char> valueTrim = value.Trim();
-        //
-        //         // This code would be simpler if we only had the concept of `InfinitySymbol`, but
-        //         // we don't so we'll check the existing cases first and then handle `PositiveSign` +
-        //         // `PositiveInfinitySymbol` and `PositiveSign/NegativeSign` + `NaNSymbol` last.
-        //
-        //         if (valueTrim.EqualsOrdinalIgnoreCase(info.PositiveInfinitySymbol))
-        //         {
-        //             result = double.PositiveInfinity;
-        //         }
-        //         else if (valueTrim.EqualsOrdinalIgnoreCase(info.NegativeInfinitySymbol))
-        //         {
-        //             result = double.NegativeInfinity;
-        //         }
-        //         else if (valueTrim.EqualsOrdinalIgnoreCase(info.NaNSymbol))
-        //         {
-        //             result = double.NaN;
-        //         }
-        //         else if (valueTrim.StartsWith(info.PositiveSign, StringComparison.OrdinalIgnoreCase))
-        //         {
-        //             valueTrim = valueTrim.Slice(info.PositiveSign.Length);
-        //
-        //             if (valueTrim.EqualsOrdinalIgnoreCase(info.PositiveInfinitySymbol))
-        //             {
-        //                 result = double.PositiveInfinity;
-        //             }
-        //             else if (valueTrim.EqualsOrdinalIgnoreCase(info.NaNSymbol))
-        //             {
-        //                 result = double.NaN;
-        //             }
-        //             else
-        //             {
-        //                 result = 0;
-        //                 return false;
-        //             }
-        //         }
-        //         else if ((valueTrim.StartsWith(info.NegativeSign, StringComparison.OrdinalIgnoreCase) && valueTrim.Slice(info.NegativeSign.Length).EqualsOrdinalIgnoreCase(info.NaNSymbol)) ||
-        //                 (info.AllowHyphenDuringParsing && SpanStartsWith(valueTrim, '-') && valueTrim.Slice(1).EqualsOrdinalIgnoreCase(info.NaNSymbol)))
-        //         {
-        //             result = double.NaN;
-        //         }
-        //         else
-        //         {
-        //             result = 0;
-        //             return false; // We really failed
-        //         }
-        //     }
-        //     else
-        //     {
-        //         result = NumberToDouble(ref number);
-        //     }
-        //
-        //     return true;
-        // }
+        internal static unsafe bool TryParseDouble(ReadOnlySpan<char> value, NumberStyles styles, NumberFormatInfo info, out double result)
+        {
+            byte* pDigits = stackalloc byte[DoubleNumberBufferLength];
+            NumberBuffer number = new NumberBuffer(NumberBufferKind.FloatingPoint, pDigits, DoubleNumberBufferLength);
+        
+            if (!TryStringToNumber(value, styles, ref number, info))
+            {
+                ReadOnlySpan<char> valueTrim = value.Trim();
+        
+                // This code would be simpler if we only had the concept of `InfinitySymbol`, but
+                // we don't so we'll check the existing cases first and then handle `PositiveSign` +
+                // `PositiveInfinitySymbol` and `PositiveSign/NegativeSign` + `NaNSymbol` last.
+        
+                if (valueTrim.EqualsOrdinalIgnoreCase(info.PositiveInfinitySymbol))
+                {
+                    result = double.PositiveInfinity;
+                }
+                else if (valueTrim.EqualsOrdinalIgnoreCase(info.NegativeInfinitySymbol))
+                {
+                    result = double.NegativeInfinity;
+                }
+                else if (valueTrim.EqualsOrdinalIgnoreCase(info.NaNSymbol))
+                {
+                    result = double.NaN;
+                }
+                else if (valueTrim.StartsWith(info.PositiveSign, StringComparison.OrdinalIgnoreCase))
+                {
+                    valueTrim = valueTrim.Slice(info.PositiveSign.Length);
+        
+                    if (valueTrim.EqualsOrdinalIgnoreCase(info.PositiveInfinitySymbol))
+                    {
+                        result = double.PositiveInfinity;
+                    }
+                    else if (valueTrim.EqualsOrdinalIgnoreCase(info.NaNSymbol))
+                    {
+                        result = double.NaN;
+                    }
+                    else
+                    {
+                        result = 0;
+                        return false;
+                    }
+                }
+                else if ((valueTrim.StartsWith(info.NegativeSign, StringComparison.OrdinalIgnoreCase) && valueTrim.Slice(info.NegativeSign.Length).EqualsOrdinalIgnoreCase(info.NaNSymbol)) ||
+                        (info.AllowHyphenDuringParsing && SpanStartsWith(valueTrim, '-') && valueTrim.Slice(1).EqualsOrdinalIgnoreCase(info.NaNSymbol)))
+                {
+                    result = double.NaN;
+                }
+                else
+                {
+                    result = 0;
+                    return false; // We really failed
+                }
+            }
+            else
+            {
+                result = NumberToDouble(ref number);
+            }
+        
+            return true;
+        }
 
         // internal static unsafe bool TryParseHalf(ReadOnlySpan<char> value, NumberStyles styles, NumberFormatInfo info, out Half result)
         // {
@@ -1921,77 +1921,77 @@ namespace System
         //     return true;
         // }
 
-        // internal static unsafe bool TryParseSingle(ReadOnlySpan<char> value, NumberStyles styles, NumberFormatInfo info, out float result)
-        // {
-        //     byte* pDigits = stackalloc byte[SingleNumberBufferLength];
-        //     NumberBuffer number = new NumberBuffer(NumberBufferKind.FloatingPoint, pDigits, SingleNumberBufferLength);
-        //
-        //     if (!TryStringToNumber(value, styles, ref number, info))
-        //     {
-        //         ReadOnlySpan<char> valueTrim = value.Trim();
-        //
-        //         // This code would be simpler if we only had the concept of `InfinitySymbol`, but
-        //         // we don't so we'll check the existing cases first and then handle `PositiveSign` +
-        //         // `PositiveInfinitySymbol` and `PositiveSign/NegativeSign` + `NaNSymbol` last.
-        //         //
-        //         // Additionally, since some cultures ("wo") actually define `PositiveInfinitySymbol`
-        //         // to include `PositiveSign`, we need to check whether `PositiveInfinitySymbol` fits
-        //         // that case so that we don't start parsing things like `++infini`.
-        //
-        //         if (valueTrim.EqualsOrdinalIgnoreCase(info.PositiveInfinitySymbol))
-        //         {
-        //             result = float.PositiveInfinity;
-        //         }
-        //         else if (valueTrim.EqualsOrdinalIgnoreCase(info.NegativeInfinitySymbol))
-        //         {
-        //             result = float.NegativeInfinity;
-        //         }
-        //         else if (valueTrim.EqualsOrdinalIgnoreCase(info.NaNSymbol))
-        //         {
-        //             result = float.NaN;
-        //         }
-        //         else if (valueTrim.StartsWith(info.PositiveSign, StringComparison.OrdinalIgnoreCase))
-        //         {
-        //             valueTrim = valueTrim.Slice(info.PositiveSign.Length);
-        //
-        //             if (!info.PositiveInfinitySymbol.StartsWith(info.PositiveSign, StringComparison.OrdinalIgnoreCase) && valueTrim.EqualsOrdinalIgnoreCase(info.PositiveInfinitySymbol))
-        //             {
-        //                 result = float.PositiveInfinity;
-        //             }
-        //             else if (!info.NaNSymbol.StartsWith(info.PositiveSign, StringComparison.OrdinalIgnoreCase) && valueTrim.EqualsOrdinalIgnoreCase(info.NaNSymbol))
-        //             {
-        //                 result = float.NaN;
-        //             }
-        //             else
-        //             {
-        //                 result = 0;
-        //                 return false;
-        //             }
-        //         }
-        //         else if (valueTrim.StartsWith(info.NegativeSign, StringComparison.OrdinalIgnoreCase) &&
-        //                  !info.NaNSymbol.StartsWith(info.NegativeSign, StringComparison.OrdinalIgnoreCase) &&
-        //                  valueTrim.Slice(info.NegativeSign.Length).EqualsOrdinalIgnoreCase(info.NaNSymbol))
-        //         {
-        //             result = float.NaN;
-        //         }
-        //         else if (info.AllowHyphenDuringParsing && SpanStartsWith(valueTrim, '-') && !info.NaNSymbol.StartsWith(info.NegativeSign, StringComparison.OrdinalIgnoreCase) &&
-        //                  !info.NaNSymbol.StartsWith('-') && valueTrim.Slice(1).EqualsOrdinalIgnoreCase(info.NaNSymbol))
-        //         {
-        //             result = float.NaN;
-        //         }
-        //         else
-        //         {
-        //             result = 0;
-        //             return false; // We really failed
-        //         }
-        //     }
-        //     else
-        //     {
-        //         result = NumberToSingle(ref number);
-        //     }
-        //
-        //     return true;
-        // }
+        internal static unsafe bool TryParseSingle(ReadOnlySpan<char> value, NumberStyles styles, NumberFormatInfo info, out float result)
+        {
+            byte* pDigits = stackalloc byte[SingleNumberBufferLength];
+            NumberBuffer number = new NumberBuffer(NumberBufferKind.FloatingPoint, pDigits, SingleNumberBufferLength);
+        
+            if (!TryStringToNumber(value, styles, ref number, info))
+            {
+                ReadOnlySpan<char> valueTrim = value.Trim();
+        
+                // This code would be simpler if we only had the concept of `InfinitySymbol`, but
+                // we don't so we'll check the existing cases first and then handle `PositiveSign` +
+                // `PositiveInfinitySymbol` and `PositiveSign/NegativeSign` + `NaNSymbol` last.
+                //
+                // Additionally, since some cultures ("wo") actually define `PositiveInfinitySymbol`
+                // to include `PositiveSign`, we need to check whether `PositiveInfinitySymbol` fits
+                // that case so that we don't start parsing things like `++infini`.
+        
+                if (valueTrim.EqualsOrdinalIgnoreCase(info.PositiveInfinitySymbol))
+                {
+                    result = float.PositiveInfinity;
+                }
+                else if (valueTrim.EqualsOrdinalIgnoreCase(info.NegativeInfinitySymbol))
+                {
+                    result = float.NegativeInfinity;
+                }
+                else if (valueTrim.EqualsOrdinalIgnoreCase(info.NaNSymbol))
+                {
+                    result = float.NaN;
+                }
+                else if (valueTrim.StartsWith(info.PositiveSign, StringComparison.OrdinalIgnoreCase))
+                {
+                    valueTrim = valueTrim.Slice(info.PositiveSign.Length);
+        
+                    if (!info.PositiveInfinitySymbol.StartsWith(info.PositiveSign, StringComparison.OrdinalIgnoreCase) && valueTrim.EqualsOrdinalIgnoreCase(info.PositiveInfinitySymbol))
+                    {
+                        result = float.PositiveInfinity;
+                    }
+                    else if (!info.NaNSymbol.StartsWith(info.PositiveSign, StringComparison.OrdinalIgnoreCase) && valueTrim.EqualsOrdinalIgnoreCase(info.NaNSymbol))
+                    {
+                        result = float.NaN;
+                    }
+                    else
+                    {
+                        result = 0;
+                        return false;
+                    }
+                }
+                else if (valueTrim.StartsWith(info.NegativeSign, StringComparison.OrdinalIgnoreCase) &&
+                         !info.NaNSymbol.StartsWith(info.NegativeSign, StringComparison.OrdinalIgnoreCase) &&
+                         valueTrim.Slice(info.NegativeSign.Length).EqualsOrdinalIgnoreCase(info.NaNSymbol))
+                {
+                    result = float.NaN;
+                }
+                else if (info.AllowHyphenDuringParsing && SpanStartsWith(valueTrim, '-') && !info.NaNSymbol.StartsWith(info.NegativeSign, StringComparison.OrdinalIgnoreCase) &&
+                         !info.NaNSymbol.StartsWith('-') && valueTrim.Slice(1).EqualsOrdinalIgnoreCase(info.NaNSymbol))
+                {
+                    result = float.NaN;
+                }
+                else
+                {
+                    result = 0;
+                    return false; // We really failed
+                }
+            }
+            else
+            {
+                result = NumberToSingle(ref number);
+            }
+        
+            return true;
+        }
 
         internal static unsafe bool TryStringToNumber(ReadOnlySpan<char> value, NumberStyles styles, ref NumberBuffer number, NumberFormatInfo info)
         {
@@ -2126,28 +2126,28 @@ namespace System
             return new OverflowException(s);
         }
 
-        // internal static double NumberToDouble(ref NumberBuffer number)
-        // {
-        //     number.CheckConsistency();
-        //     double result;
-        //
-        //     if ((number.DigitsCount == 0) || (number.Scale < DoubleMinExponent))
-        //     {
-        //         result = 0;
-        //     }
-        //     else if (number.Scale > DoubleMaxExponent)
-        //     {
-        //         result = double.PositiveInfinity;
-        //     }
-        //     else
-        //     {
-        //         ulong bits = NumberToDoubleFloatingPointBits(ref number, in FloatingPointInfo.Double);
-        //         result = BitConverter.UInt64BitsToDouble(bits);
-        //     }
-        //
-        //     return number.IsNegative ? -result : result;
-        // }
-        //
+        internal static double NumberToDouble(ref NumberBuffer number)
+        {
+            number.CheckConsistency();
+            double result;
+        
+            if ((number.DigitsCount == 0) || (number.Scale < DoubleMinExponent))
+            {
+                result = 0;
+            }
+            else if (number.Scale > DoubleMaxExponent)
+            {
+                result = double.PositiveInfinity;
+            }
+            else
+            {
+                ulong bits = NumberToDoubleFloatingPointBits(ref number, in FloatingPointInfo.Double);
+                result = BitConverter.UInt64BitsToDouble(bits);
+            }
+        
+            return number.IsNegative ? -result : result;
+        }
+        
         // internal static Half NumberToHalf(ref NumberBuffer number)
         // {
         //     number.CheckConsistency();
@@ -2169,27 +2169,27 @@ namespace System
         //
         //     return number.IsNegative ? Half.Negate(result) : result;
         // }
-        //
-        // internal static float NumberToSingle(ref NumberBuffer number)
-        // {
-        //     number.CheckConsistency();
-        //     float result;
-        //
-        //     if ((number.DigitsCount == 0) || (number.Scale < SingleMinExponent))
-        //     {
-        //         result = 0;
-        //     }
-        //     else if (number.Scale > SingleMaxExponent)
-        //     {
-        //         result = float.PositiveInfinity;
-        //     }
-        //     else
-        //     {
-        //         uint bits = NumberToSingleFloatingPointBits(ref number, in FloatingPointInfo.Single);
-        //         result = BitConverter.UInt32BitsToSingle(bits);
-        //     }
-        //
-        //     return number.IsNegative ? -result : result;
-        // }
+        
+        internal static float NumberToSingle(ref NumberBuffer number)
+        {
+            number.CheckConsistency();
+            float result;
+        
+            if ((number.DigitsCount == 0) || (number.Scale < SingleMinExponent))
+            {
+                result = 0;
+            }
+            else if (number.Scale > SingleMaxExponent)
+            {
+                result = float.PositiveInfinity;
+            }
+            else
+            {
+                uint bits = NumberToSingleFloatingPointBits(ref number, in FloatingPointInfo.Single);
+                result = BitConverter.UInt32BitsToSingle(bits);
+            }
+        
+            return number.IsNegative ? -result : result;
+        }
     }
 }
