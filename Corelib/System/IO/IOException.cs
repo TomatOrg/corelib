@@ -10,6 +10,7 @@ namespace System.IO
 
         internal const string StreamTooLong = "Stream was too long.";
         internal const string SeekBeforeBegin = "An attempt was made to move the position before the beginning of the stream.";
+        internal const string InvalidReadLength = "The read operation returned an invalid length.";
         
         public IOException()
             : base("I/O error occurred.")

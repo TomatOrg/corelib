@@ -15,6 +15,8 @@ public class ArgumentException : SystemException
     internal const string ConversionOverflow = "Conversion buffer overflow.";
     internal const string InvalidCharSequenceNoIndex = "String contains invalid Unicode code points.";
     internal const string InvalidNumberStyles = "An undefined NumberStyles value is being used.";
+    internal const string StreamNotReadable = "Stream was not readable.";
+    internal const string StreamNotWritable = "Stream was not writable.";
 
     internal const string InvalidHexStyle =
         "With the AllowHexSpecifier bit set in the enum bit field, the only other valid bits that can be combined into the enum value must be a subset of those in HexNumber.";

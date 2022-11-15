@@ -13,6 +13,7 @@ namespace System
     {
         
         internal const string Generic = "";
+        internal const string ReaderClosed = "Cannot read from a closed TextReader.";
         
         private readonly string? _objectName;
 

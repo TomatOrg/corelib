@@ -200,6 +200,30 @@ public partial class String : IEnumerable<char>, IComparable<string?>, IEquatabl
         return result;
     }
     
+    // Converts a substring of this string to an array of characters.  Copies the
+    // characters of this string beginning at position sourceIndex and ending at
+    // sourceIndex + count - 1 to the character array buffer, beginning
+    // at destinationIndex.
+    //
+    public unsafe void CopyTo(int sourceIndex, char[] destination, int destinationIndex, int count)
+    {
+        if (destination == null)
+            throw new ArgumentNullException(nameof(destination));
+        if (count < 0)
+            throw new ArgumentOutOfRangeException(nameof(count), ArgumentOutOfRangeException.NegativeCount);
+        if (sourceIndex < 0)
+            throw new ArgumentOutOfRangeException(nameof(sourceIndex), ArgumentOutOfRangeException.Index);
+        if (count > Length - sourceIndex)
+            throw new ArgumentOutOfRangeException(nameof(sourceIndex), ArgumentOutOfRangeException.IndexCount);
+        if (destinationIndex > destination.Length - count || destinationIndex < 0)
+            throw new ArgumentOutOfRangeException(nameof(destinationIndex), ArgumentOutOfRangeException.IndexCount);
+
+        Buffer.Memmove(
+            destination: ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(destination), destinationIndex),
+            source: ref Unsafe.Add(ref _firstChar, sourceIndex),
+            elementCount: (uint)count);
+    }
+    
     /// <summary>Copies the contents of this string into the destination span.</summary>
     /// <param name="destination">The span into which to copy this string's contents.</param>
     /// <exception cref="System.ArgumentException">The destination span is shorter than the source string.</exception>
