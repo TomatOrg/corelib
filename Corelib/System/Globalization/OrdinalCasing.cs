@@ -158,8 +158,6 @@ namespace System.Globalization
 
         internal static void ToUpperOrdinal(ReadOnlySpan<char> source, Span<char> destination)
         {
-            Debug.Assert(!GlobalizationMode.Invariant);
-
             for (int i = 0; i < source.Length; i++)
             {
                 char c = source[i];
@@ -187,8 +185,6 @@ namespace System.Globalization
 
         internal static int CompareStringIgnoreCase(ref char strA, int lengthA, ref char strB, int lengthB)
         {
-            Debug.Assert(!GlobalizationMode.Invariant);
-
             int length = Math.Min(lengthA, lengthB);
 
             ref char charA = ref strA;
@@ -291,8 +287,6 @@ namespace System.Globalization
             Debug.Assert(value.Length > 0);
             Debug.Assert(value.Length <= source.Length);
 
-            Debug.Assert(!GlobalizationMode.Invariant);
-
             ref char pSource = ref MemoryMarshal.GetReference(source);
             ref char pValue = ref MemoryMarshal.GetReference(value);
             
@@ -352,8 +346,6 @@ namespace System.Globalization
         {
             Debug.Assert(value.Length > 0);
             Debug.Assert(value.Length <= source.Length);
-
-            Debug.Assert(!GlobalizationMode.Invariant);
 
             ref char pSource = ref MemoryMarshal.GetReference(source);
             ref char pValue = ref MemoryMarshal.GetReference(value);

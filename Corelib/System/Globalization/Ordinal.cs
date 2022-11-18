@@ -62,12 +62,6 @@ namespace System.Globalization
 
         internal static int CompareStringIgnoreCaseNonAscii(ref char strA, int lengthA, ref char strB, int lengthB)
         {
-            if (GlobalizationMode.Invariant)
-            {
-                // return InvariantModeCasing.CompareStringIgnoreCase(ref strA, lengthA, ref strB, lengthB);
-                throw new NotImplementedException();
-            }
-
             return OrdinalCasing.CompareStringIgnoreCase(ref strA, lengthA, ref strB, lengthB);
         }
 
@@ -216,12 +210,6 @@ namespace System.Globalization
                 return -1;
             }
 
-            if (GlobalizationMode.Invariant)
-            {
-                // return InvariantModeCasing.IndexOfIgnoreCase(source, value);
-                throw new NotImplementedException();
-            }
-
             return OrdinalCasing.IndexOf(source, value);
         }
 
@@ -254,12 +242,6 @@ namespace System.Globalization
                 return -1;
             }
 
-            if (GlobalizationMode.Invariant)
-            {
-                // return ignoreCase ? InvariantModeCasing.LastIndexOfIgnoreCase(source.AsSpan().Slice(startIndex, count), value) : LastIndexOf(source, value, startIndex, count);
-                throw new NotImplementedException();
-            }
-            
             if (!ignoreCase)
             {
                 LastIndexOf(source, value, startIndex, count);
@@ -305,12 +287,6 @@ namespace System.Globalization
                 return -1;
             }
 
-            if (GlobalizationMode.Invariant)
-            {
-                // return InvariantModeCasing.LastIndexOfIgnoreCase(source, value);
-                throw new NotImplementedException();
-            }
-
             return OrdinalCasing.LastIndexOf(source, value);
         }
 
@@ -322,13 +298,6 @@ namespace System.Globalization
             // Assuming that changing case does not affect length
             if (destination.Length < source.Length)
                 return -1;
-
-            if (GlobalizationMode.Invariant)
-            {
-                // InvariantModeCasing.ToUpper(source, destination);
-                // return source.Length;
-                throw new NotImplementedException();
-            }
 
             OrdinalCasing.ToUpperOrdinal(source, destination);
             return source.Length;
