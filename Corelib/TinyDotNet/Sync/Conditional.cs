@@ -10,12 +10,12 @@ internal struct Conditional
     private NotifyList _notify;
 
     [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Native)]
-    public extern void Wait(ref Mutex mutex);
+    internal extern void Wait(ref Mutex mutex);
     
     [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Native)]
-    public extern void Signal();
+    internal extern void Signal();
     
     [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Native)]
-    public extern void Broadcast();
+    internal extern void Broadcast();
 
 }

@@ -836,13 +836,15 @@ namespace System
         //
         public int Month => GetDatePart(DatePartMonth);
 
-        public static DateTime UtcNow
-        {
-            get
-            {
-                return new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-            }
-        }
+        /// <summary>
+        /// Take the base time from the managed host and add
+        /// to it the current tick count, we already decrease the
+        /// tick count from the time when the current time base was
+        /// set so no need to do it here, this should keep a fairly
+        /// accurate time keeping without needing to read from the
+        /// rtc or whatever every time
+        /// </summary>
+        public static DateTime UtcNow => ManagedHost.CurrentTimeBase.AddTicks(Environment.TickCount64);
 
         // // Returns a DateTime representing the current date and time. The
         // // resolution of the returned value depends on the system timer.
@@ -872,7 +874,7 @@ namespace System
 
         // Returns the tick count for this DateTime. The returned value is
         // the number of 100-nanosecond intervals that have elapsed since 1/1/0001
-        // 12:00am.
+        // 12:00am.k
         //
         public long Ticks => (long)(_dateData & TicksMask);
 

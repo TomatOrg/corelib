@@ -10,9 +10,9 @@ internal struct Spinlock
     private bool _locked;
 
     [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Native)]
-    public extern void Lock();
+    internal extern void Lock();
 
     [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Native)]
-    public extern void Unlock();
+    internal extern void Unlock();
 
 }
