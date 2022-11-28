@@ -9,8 +9,8 @@ public class Exception
 
     private protected const string InnerExceptionPrefix = " ---> ";
 
-    internal string _message;
-    private Exception _innerException;
+    internal string? _message;
+    private Exception? _innerException;
 
     public Exception()
     {

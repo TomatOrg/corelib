@@ -1,24 +1,25 @@
-using System.Runtime.InteropServices;
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
 
-namespace System;
+using System.Runtime.Serialization;
 
-[StructLayout(LayoutKind.Sequential)]
-public class SystemException : Exception
+namespace System
 {
-
-    public SystemException()
-        : base("System error.")
+    public class SystemException : Exception
     {
-    }
+        public SystemException()
+            : base("System error.")
+        {
+        }
 
-    public SystemException(string message)
-        : base(message)
-    {
-    }
+        public SystemException(string? message)
+            : base(message)
+        {
+        }
 
-    public SystemException(string message, Exception innerException)
-        : base(message, innerException)
-    {
+        public SystemException(string? message, Exception? innerException)
+            : base(message, innerException)
+        {
+        }
     }
-        
 }
