@@ -260,7 +260,7 @@ public sealed class Thread
 
     public static void Sleep(TimeSpan timeout)
     {
-        var waitable = NativeHost.WaitableAfter(timeout.Ticks / TimeSpan.TicksPerMillisecond * 1000);
+        var waitable = NativeHost.WaitableAfter(timeout.Ticks);
         try
         {
             NativeHost.WaitableWait(waitable, true);

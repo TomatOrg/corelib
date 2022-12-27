@@ -201,7 +201,7 @@ namespace System.Threading
             
             while (true)
             {
-                if (!_semaphore.Acquire(true, timeoutMs * 1000))
+                if (!_semaphore.Acquire(true, timeoutMs * TimeSpan.TicksPerMillisecond))
                 {
                     // Unregister the waiter. The wait subsystem used above guarantees that a thread that wakes due to a timeout does
                     // not observe a signal to the object being waited upon.

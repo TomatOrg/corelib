@@ -29,7 +29,7 @@ internal static class NativeHost
     internal static extern ulong CreateWaitable(int count);
 
     [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    internal static extern ulong WaitableAfter(long timeoutMicro);
+    internal static extern ulong WaitableAfter(long timeoutTicks);
 
     [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
     internal static extern ulong PutWaitable(ulong waitable);

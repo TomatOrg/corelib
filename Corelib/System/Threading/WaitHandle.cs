@@ -82,7 +82,7 @@ public abstract class WaitHandle : IDisposable
         }
 
         // otherwise we need to select on either a timeout or our handle
-        var timeout = NativeHost.WaitableAfter(millisecondsTimeout * 1000);
+        var timeout = NativeHost.WaitableAfter(millisecondsTimeout * TimeSpan.TicksPerMillisecond);
         try
         {
             Span<ulong> waitables = stackalloc ulong[2];
@@ -127,7 +127,7 @@ public abstract class WaitHandle : IDisposable
             // need to wait on all of these
             if (millisecondsTimeout != -1)
             {
-                var timeout = NativeHost.WaitableAfter(millisecondsTimeout * 1000);
+                var timeout = NativeHost.WaitableAfter(millisecondsTimeout * TimeSpan.TicksPerMillisecond);
                 try
                 {
                     // first is always the timeout
@@ -175,7 +175,7 @@ public abstract class WaitHandle : IDisposable
 
             if (millisecondsTimeout != -1)
             {
-                var timeout = NativeHost.WaitableAfter(millisecondsTimeout * 1000);
+                var timeout = NativeHost.WaitableAfter(millisecondsTimeout * TimeSpan.TicksPerMillisecond);
                 try
                 {
                     // the first is always the timeout 
