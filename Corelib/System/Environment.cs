@@ -32,7 +32,7 @@ namespace System
 
         public static int TickCount => (int)TickCount64;
 
-        public static long TickCount64 => (Stopwatch.GetTimestamp()) / TimeSpan.TicksPerMillisecond;
+        public static long TickCount64 => (Stopwatch.GetTimestamp() / Stopwatch.Frequency) * 1000;
 
         // TODO: this is very wrong lmao, we don't really have the concept of a thread id right now 
         public static int CurrentManagedThreadId => Thread.CurrentThread.GetHashCode();

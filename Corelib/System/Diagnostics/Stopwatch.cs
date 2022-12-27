@@ -10,7 +10,7 @@ public class Stopwatch
     
     static Stopwatch()
     {
-        Frequency = GetTscFrequency();
+        Frequency = GetTscFrequency() * TimeSpan.TicksPerSecond;
     }
 
     [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
@@ -31,7 +31,7 @@ public class Stopwatch
         }
     }
 
-    public TimeSpan Elapsed => new(ElapsedTicks * TimeSpan.TicksPerSecond / Frequency);
+    public TimeSpan Elapsed => new(ElapsedTicks);
     public long ElapsedMilliseconds => Elapsed.Milliseconds;
     
     public bool IsRunning { get; private set; }
