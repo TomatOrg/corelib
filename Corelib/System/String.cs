@@ -34,15 +34,16 @@ public partial class String : IEnumerable<char>, IComparable<string?>, IEquatabl
     {
         get
         {
-            if ((uint)index > (uint)Length) throw new IndexOutOfRangeException();
-            return Unsafe.Add(ref _firstChar, index);
+            if ((uint)index >= (uint)Length) 
+                throw new IndexOutOfRangeException();
+            return Unsafe.Add(ref GetRawStringData(), index);
         }
     }
     
     /// <summary>
     /// Returns a reference to the first element of the String. If the string is null, an access will throw a NullReferenceException.
     /// </summary>
-    public ref readonly char GetPinnableReference() => ref _firstChar;
+    public ref readonly char GetPinnableReference() => ref GetRawStringData();
 
     internal ref char GetRawStringData() => ref _firstChar;
 

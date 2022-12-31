@@ -42,12 +42,12 @@ public static class GC
     
     public static void ReRegisterForFinalize(object obj)
     {
-        obj.ReRegisterForFinalize();
+        // obj.ReRegisterForFinalize();
     }
     
     public static void SuppressFinalize(object obj)
     {
-        obj.SuppressFinalize();
+        // obj.SuppressFinalize();
     }
 
 }

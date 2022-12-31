@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Numerics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -24,6 +25,8 @@ public class Type : MemberInfo
     private bool _isByRef;
     private bool _isBoxed;
     private bool _isPointer;
+
+    private uint _smallPointer;
 
     private Type _genericTypeDefinition;
     private int _genericTypeAttributes;
