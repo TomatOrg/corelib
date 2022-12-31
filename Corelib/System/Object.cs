@@ -6,7 +6,8 @@ namespace System
     [StructLayout(LayoutKind.Sequential)]
     public class Object
     {
-        private unsafe void* _vtable;
+        private uint _vtable;
+        private uint _reserved;
         private uint _type;
         private uint _typeFlags;
         

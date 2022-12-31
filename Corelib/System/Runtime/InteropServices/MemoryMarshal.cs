@@ -188,7 +188,7 @@ public static class MemoryMarshal
         
         if (memory._object is T[] array)
         {
-            var offset = (int)(((long)memory._pointer - (long)array.GetDataPtr()) / Unsafe.SizeOf<T>());
+            var offset = (int)(((long)memory._pointer - (long)Unsafe.AsPointer(ref GetArrayDataReference(array))) / Unsafe.SizeOf<T>());
             segment = new ArraySegment<T>(array, offset, memory.Length);
             return true;
         }
@@ -306,6 +306,12 @@ public static class MemoryMarshal
         }
         return ref Unsafe.As<byte, T>(ref GetReference(span));
     }
+
+    private class RawArray<T>
+    {
+        internal int Length;
+        internal T first;
+    }
     
     /// <summary>
     /// Returns a reference to the 0th element of <paramref name="array"/>. If the array is empty, returns a reference to where the 0th element
@@ -316,10 +322,9 @@ public static class MemoryMarshal
     /// This method does not perform array variance checks. The caller must manually perform any array variance checks
     /// if the caller wishes to write to the returned reference.
     /// </remarks>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static unsafe ref T GetArrayDataReference<T>(T[] array)
+    internal static ref T GetArrayDataReference<T>(T[] array)
     {
-        return ref Unsafe.AsRef<T>(array.GetDataPtr());
+        return ref Unsafe.As<RawArray<T>>(array).first;
     }
 
 }

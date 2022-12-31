@@ -44,7 +44,7 @@ public class Type : MemberInfo
     private int _managedSize;
     private int _managedAlignment;
     private int _stackSize;
-    private int _stackAlignment;
+    internal int _stackAlignment;
     private int _stackType;
     private MethodInfo _typeInitializer;
 

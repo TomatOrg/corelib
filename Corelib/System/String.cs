@@ -25,7 +25,13 @@ public partial class String : IEnumerable<char>, IComparable<string?>, IEquatabl
     public static readonly string Empty = "";
 
     private readonly int _stringLength;
-    private char _firstChar;
+
+    private class RawData
+    {
+        internal char Data;
+    }
+    
+    private ref char _firstChar => ref Unsafe.AddByteOffset(ref Unsafe.As<RawData>(this).Data, 16 + 4);
 
     public int Length => _stringLength;
 
@@ -34,16 +40,15 @@ public partial class String : IEnumerable<char>, IComparable<string?>, IEquatabl
     {
         get
         {
-            if ((uint)index >= (uint)Length) 
-                throw new IndexOutOfRangeException();
-            return Unsafe.Add(ref GetRawStringData(), index);
+            if ((uint)index >= (uint)Length) throw new IndexOutOfRangeException();
+            return Unsafe.Add(ref _firstChar, index);
         }
     }
     
     /// <summary>
     /// Returns a reference to the first element of the String. If the string is null, an access will throw a NullReferenceException.
     /// </summary>
-    public ref readonly char GetPinnableReference() => ref GetRawStringData();
+    public ref readonly char GetPinnableReference() => ref _firstChar;
 
     internal ref char GetRawStringData() => ref _firstChar;
 

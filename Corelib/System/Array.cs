@@ -26,9 +26,6 @@ public class Array
 
     private Array() {}
 
-    [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    internal extern unsafe void* GetDataPtr();
-
     #endregion
     
     private static class EmptyArray<T>

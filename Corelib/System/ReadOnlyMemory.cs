@@ -34,7 +34,7 @@ public readonly unsafe struct ReadOnlyMemory<T>
         }
 
         _object = array;
-        _pointer = array.GetDataPtr();
+        _pointer = Unsafe.AsPointer(ref MemoryMarshal.GetArrayDataReference(array));
         _length = array.Length;
     }
     
@@ -65,7 +65,7 @@ public readonly unsafe struct ReadOnlyMemory<T>
             ThrowHelper.ThrowArgumentOutOfRangeException();
 
         _object = array;
-        _pointer = Unsafe.Add<T>(array.GetDataPtr(), start);
+        _pointer = Unsafe.AsPointer(ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(array), start));
         _length = length;
     }
     
