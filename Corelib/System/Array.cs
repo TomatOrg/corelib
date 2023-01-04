@@ -19,6 +19,7 @@ public class Array
     #region Instance
     
     private readonly int _length;
+    private readonly int _padding;
 
     public int Length => _length;
     public long LongLength => _length;

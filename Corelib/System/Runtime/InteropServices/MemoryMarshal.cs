@@ -307,24 +307,13 @@ public static class MemoryMarshal
         return ref Unsafe.As<byte, T>(ref GetReference(span));
     }
 
-    private class RawArray<T>
+    internal sealed class RawArrayData
     {
-        internal int Length;
-        internal T first;
-    }
-    
-    /// <summary>
-    /// Returns a reference to the 0th element of <paramref name="array"/>. If the array is empty, returns a reference to where the 0th element
-    /// would have been stored. Such a reference may be used for pinning but must never be dereferenced.
-    /// </summary>
-    /// <exception cref="NullReferenceException"><paramref name="array"/> is <see langword="null"/>.</exception>
-    /// <remarks>
-    /// This method does not perform array variance checks. The caller must manually perform any array variance checks
-    /// if the caller wishes to write to the returned reference.
-    /// </remarks>
-    internal static ref T GetArrayDataReference<T>(T[] array)
-    {
-        return ref Unsafe.As<RawArray<T>>(array).first;
+        public uint Length;
+        public uint Padding;
+        public byte Data;
     }
 
+    public static ref T GetArrayDataReference<T>(T[] array) =>
+            ref Unsafe.As<byte, T>(ref Unsafe.As<RawArrayData>(array).Data);
 }
