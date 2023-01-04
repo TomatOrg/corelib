@@ -31,7 +31,7 @@ public partial class String : IEnumerable<char>, IComparable<string?>, IEquatabl
         internal char Data;
     }
     
-    private ref char _firstChar => ref Unsafe.AddByteOffset(ref Unsafe.As<RawData>(this).Data, 16 + 4);
+    private ref char _firstChar => ref Unsafe.AddByteOffset(ref Unsafe.As<RawData>(this).Data, 4);
 
     public int Length => _stringLength;
 
