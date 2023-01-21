@@ -11,7 +11,7 @@ namespace System.Threading
     /// A LIFO semaphore.
     /// Waits on this semaphore are uninterruptible.
     /// </summary>
-    internal sealed partial class LowLevelLifoSemaphore
+    internal sealed class LowLevelLifoSemaphore
     {
         private CacheLineSeparatedCounts _separated;
 
@@ -34,9 +34,26 @@ namespace System.Threading
             _maximumSignalCount = maximumSignalCount;
             _spinCount = spinCount;
 
-            _semaphore = default;
+            _semaphore = new TinyDotNet.Sync.Semaphore(maximumSignalCount);
         }
 
+        public bool WaitCore(int timeoutMs)
+        {
+            Debug.Assert(timeoutMs >= -1);
+            
+            return _semaphore.Wait(timeoutMs);
+        }
+
+        public void ReleaseCore(int count)
+        {
+            Debug.Assert(count > 0);
+
+            while (count-- != 0)
+            {
+                _semaphore.Signal();
+            }
+        }
+        
         public bool Wait(int timeoutMs, bool spinWait)
         {
             Debug.Assert(timeoutMs >= -1);
@@ -184,10 +201,8 @@ namespace System.Threading
                 if (countsBeforeUpdate == counts)
                 {
                     Debug.Assert(releaseCount <= _maximumSignalCount - counts.SignalCount);
-                    while (countOfWaitersToWake-- > 0)
-                    {
-                        _semaphore.Release(false);
-                    }
+                    if (countOfWaitersToWake > 0)
+                        ReleaseCore(countOfWaitersToWake);
                     return;
                 }
 
@@ -198,10 +213,10 @@ namespace System.Threading
         private bool WaitForSignal(int timeoutMs)
         {
             Debug.Assert(timeoutMs > 0 || timeoutMs == -1);
-            
+
             while (true)
             {
-                if (!_semaphore.Acquire(true, timeoutMs * TimeSpan.TicksPerMillisecond))
+                if (!WaitCore(timeoutMs))
                 {
                     // Unregister the waiter. The wait subsystem used above guarantees that a thread that wakes due to a timeout does
                     // not observe a signal to the object being waited upon.

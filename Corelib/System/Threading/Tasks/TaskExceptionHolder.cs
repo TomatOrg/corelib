@@ -86,7 +86,7 @@ namespace System.Threading.Tasks
         /// to add to the list.
         /// </param>
         /// <remarks>
-        /// Must be called under lock.
+        /// Must be called under mutex.
         /// </remarks>
         internal void Add(object exceptionObject, bool representsCancellation)
         {
@@ -103,7 +103,7 @@ namespace System.Threading.Tasks
         /// <summary>Sets the cancellation exception.</summary>
         /// <param name="exceptionObject">The cancellation exception.</param>
         /// <remarks>
-        /// Must be called under lock.
+        /// Must be called under mutex.
         /// </remarks>
         private void SetCancellationException(object exceptionObject)
         {
@@ -139,7 +139,7 @@ namespace System.Threading.Tasks
         /// <summary>Adds the exception to the fault list.</summary>
         /// <param name="exceptionObject">The exception to store.</param>
         /// <remarks>
-        /// Must be called under lock.
+        /// Must be called under mutex.
         /// </remarks>
         private void AddFaultException(object exceptionObject)
         {

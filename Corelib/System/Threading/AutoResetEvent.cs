@@ -1,21 +1,10 @@
-namespace System.Threading;
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
 
-public sealed class AutoResetEvent : EventWaitHandle
+namespace System.Threading
 {
-
-    public AutoResetEvent(bool initialState)
-        : base(initialState, EventResetMode.AutoReset)
+    public sealed class AutoResetEvent : EventWaitHandle
     {
+        public AutoResetEvent(bool initialState) : base(initialState, EventResetMode.AutoReset) { }
     }
-
-    public override bool Set()
-    {
-        return SetAutoReset();
-    }
-
-    public override bool Reset()
-    {
-        return ResetAutoReset();
-    }
-    
 }

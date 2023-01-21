@@ -34,10 +34,10 @@ public class Assembly
     private unsafe void* _userStringsTable;
     private unsafe void* _customAttributeMap;
 
-    [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+    [MethodImpl(MethodCodeType = MethodCodeType.Native)]
     private extern static Assembly LoadInternal(byte[] rawAssembly, bool reflection); 
     
-    [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+    [MethodImpl(MethodCodeType = MethodCodeType.Native)]
     private extern static Assembly LoadInternal(string rawAssembly, bool reflection);
     
     internal Assembly()

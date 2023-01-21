@@ -1,21 +1,63 @@
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-
 namespace TinyDotNet.Sync;
 
-[StructLayout(LayoutKind.Sequential)]
 internal struct Semaphore
 {
 
-    private uint _value;
-    private Spinlock _lock;
-    private unsafe void* _waiters;
-    private uint _nwait;
+    private new Mutex _mutex;
+    private new Condition _condition;
+    private int _value;
 
-    [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Native)]
-    internal extern bool Acquire(bool lifo, long timeout);
+    internal Semaphore(int value)
+    {
+        _mutex = default;
+        _condition = default;
+        _value = value;
+    }
+    
+    internal void Signal()
+    {
+        _mutex.Lock();
+        _value++;
+        _condition.NotifyOne();
+        _mutex.Unlock();
+    }
 
-    [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Native)]
-    internal extern void Release(bool handoff);
-
+    internal bool Wait(int timeout)
+    {
+        var satisfied = true;
+        
+        //
+        //     template<typename LockType, typename Functor>
+        // bool waitUntilUnchecked(LockType& lock, const TimeWithDynamicClockType& timeout, const Functor& predicate) WTF_IGNORES_THREAD_SAFETY_ANALYSIS
+        // {
+        // while (!predicate()) {
+        // if (!waitUntil(lock, timeout))
+        // return predicate();
+        //     }
+        //     return true;
+        // }
+        //
+        //
+        
+        _mutex.Lock();
+        while (_value == 0)
+        {
+            // sleep for it, if true we did not get a timeout
+            // TODO: this is kinda incorrect, we should
+            // TODO: use a deadline instead...
+            if (_condition.Wait(ref _mutex, timeout)) 
+                continue;
+         
+            // we got a timeout, one last check and then exit
+            satisfied = _value != 0;
+            break;
+        }
+        _mutex.Unlock();
+        
+        if (satisfied)
+            --_value;
+        
+        return satisfied;
+    }
+    
 }

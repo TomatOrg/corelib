@@ -7,7 +7,7 @@ public static class X86Base
 
     public static bool IsSupported => true;
     
-    [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+    [MethodImpl(MethodCodeType = MethodCodeType.Native)]
     public static extern void Pause();
 
 }

@@ -80,7 +80,9 @@ namespace System.Threading
                 return;
             }
 
-            Thread.Yield();
+            // Thread.Sleep is interruptible. The current operation may not allow thread interrupt. Use the uninterruptible
+            // version of Sleep(0). Not doing Thread.Yield, it does not seem to have any benefit over Sleep(0).
+            Thread.UninterruptibleSleep0();
 
             // Don't want to Sleep(1) in this spin wait:
             //   - Don't want to spin for that long, since a proper wait will follow when the spin wait fails

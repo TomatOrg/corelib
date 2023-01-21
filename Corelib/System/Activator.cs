@@ -25,7 +25,4 @@ public static class Activator
         return Unsafe.As<T>(CreateInstance(typeof(T)));
     }
     
-    // [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    // public static extern T CreateInstance<T>() where T : new();
-
 }

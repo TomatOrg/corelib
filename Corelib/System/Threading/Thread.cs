@@ -94,7 +94,7 @@ public sealed class Thread
     
     public static extern Thread CurrentThread
     {
-        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        [MethodImpl(MethodCodeType = MethodCodeType.Native)]
         get;
     }
 
@@ -149,6 +149,22 @@ public sealed class Thread
     internal ExecutionContext _executionContext;
     private ulong _threadHandle;
 
+    internal WaitSubsystem.ThreadWaitInfo? _waitInfo;
+
+    internal WaitSubsystem.ThreadWaitInfo WaitInfo
+    {
+        get
+        {
+            return Volatile.Read(ref _waitInfo) ?? AllocateWaitInfo();
+
+            WaitSubsystem.ThreadWaitInfo AllocateWaitInfo()
+            {
+                Interlocked.CompareExchange(ref _waitInfo, new WaitSubsystem.ThreadWaitInfo(this), null!);
+                return _waitInfo;
+            }
+        }
+    }
+    
     public Thread(ParameterizedThreadStart start)
     {
         if (start == null)
@@ -175,6 +191,8 @@ public sealed class Thread
         _startHelper = null;
 
         startHelper.Run();
+        
+        WaitInfo.OnThreadExiting();
     }
 
     ~Thread()
@@ -250,26 +268,23 @@ public sealed class Thread
         StartNativeThread(_threadHandle, null);
     }
 
+    #region Sleep
+    
+    [MethodImpl(MethodImplOptions.NoInlining)] // Slow path method. Make sure that the caller frame does not pay for PInvoke overhead.
     public static void Sleep(int millisecondsTimeout)
     {
-        if (millisecondsTimeout < -1)
-            throw new ArgumentOutOfRangeException(nameof(millisecondsTimeout), "Number must be either non-negative and less than or equal to Int32.MaxValue or -1.");
-        
-        Sleep(new TimeSpan(millisecondsTimeout * TimeSpan.TicksPerMillisecond));
+        if (millisecondsTimeout < Timeout.Infinite)
+            throw new ArgumentOutOfRangeException(nameof(millisecondsTimeout), millisecondsTimeout, ArgumentOutOfRangeException.NeedNonNegOrNegative1);
+        SleepInternal(millisecondsTimeout);
     }
 
-    public static void Sleep(TimeSpan timeout)
-    {
-        var waitable = NativeHost.WaitableAfter(timeout.Ticks);
-        try
-        {
-            NativeHost.WaitableWait(waitable, true);
-        }
-        finally
-        {
-            NativeHost.ReleaseWaitable(waitable);
-        }
-    }
+    public static void Sleep(TimeSpan timeout) => Sleep(WaitHandle.ToTimeoutMilliseconds(timeout));
+    
+    internal static void UninterruptibleSleep0() => WaitSubsystem.UninterruptibleSleep0();
+
+    private static void SleepInternal(int millisecondsTimeout) => WaitSubsystem.Sleep(millisecondsTimeout);
+    
+    #endregion
 
     public static void SpinWait(int iterations)
     {
@@ -279,25 +294,25 @@ public sealed class Thread
         }
     }
 
-    [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+    [MethodImpl(MethodCodeType = MethodCodeType.Native)]
     public static extern int GetCurrentProcessorId();
 
-    [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+    [MethodImpl(MethodCodeType = MethodCodeType.Native)]
     public static extern bool Yield();
     
-    [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+    [MethodImpl(MethodCodeType = MethodCodeType.Native)]
     private static extern int GetNativeThreadState(ulong thread);
     
-    [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+    [MethodImpl(MethodCodeType = MethodCodeType.Native)]
     private static extern ulong CreateNativeThread(Delegate start, Thread managedThread);
 
-    [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+    [MethodImpl(MethodCodeType = MethodCodeType.Native)]
     private static extern void StartNativeThread(ulong thread, object parameter);
     
-    [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+    [MethodImpl(MethodCodeType = MethodCodeType.Native)]
     private static extern void ReleaseNativeThread(ulong thread);
     
-    [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+    [MethodImpl(MethodCodeType = MethodCodeType.Native)]
     private static extern void SetNativeThreadName(ulong thread, string name);
 
 }

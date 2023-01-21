@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using TinyDotNet.Sync;
 
 namespace System
 {
@@ -7,11 +8,13 @@ namespace System
     public class Object
     {
         private uint _vtable;
-        private uint _reserved;
         private uint _type;
-        private uint _typeFlags;
+        internal Mutex _mutex;
+        internal Condition _condition;
+        internal ushort _lockThreadId;
+        internal uint _typeFlags;
         
-        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        [MethodImpl(MethodCodeType = MethodCodeType.Native)]
         public extern Type GetType();
         
         public virtual bool Equals(object obj)

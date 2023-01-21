@@ -3,7 +3,6 @@
 
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using TinyDotNet.Sync;
 
 namespace System.Threading
 {
@@ -15,19 +14,18 @@ namespace System.Threading
     [StructLayout(LayoutKind.Auto)]
     internal partial struct LowLevelMonitor
     {
-
-        private class Monitor
-        {
-            public TinyDotNet.Sync.Mutex Mutex;
-            public TinyDotNet.Sync.Conditional Conditional;
-        }
-        
 #if DEBUG
         private Thread? _ownerThread;
 #endif
 
-        private Monitor _monitor;
+        private class Monitor
+        {
+            public TinyDotNet.Sync.Mutex Mutex;
+            public TinyDotNet.Sync.Condition Condition;
+        }
 
+        private Monitor _monitor;
+        
         public void Initialize()
         {
             _monitor = new Monitor();
@@ -100,31 +98,24 @@ namespace System.Threading
         public void Wait()
         {
             ResetOwnerThread();
-            _monitor.Conditional.Wait(ref _monitor.Mutex);
+            Wait(-1);
             SetOwnerThreadToCurrent();
         }
 
         public bool Wait(int timeoutMilliseconds)
         {
-            if (timeoutMilliseconds != -1)
-            {
-                throw new NotImplementedException();
-            }
-            
-            Wait();
-            return true;
-            // Debug.Assert(timeoutMilliseconds >= -1);
-            //
-            // ResetOwnerThread();
-            // bool waitResult = WaitCore(timeoutMilliseconds);
-            // SetOwnerThreadToCurrent();
-            // return waitResult;
+            Debug.Assert(timeoutMilliseconds >= -1);
+
+            ResetOwnerThread();
+            var waitResult = _monitor.Condition.Wait(ref _monitor.Mutex, timeoutMilliseconds);
+            SetOwnerThreadToCurrent();
+            return waitResult;
         }
 
         public void Signal_Release()
         {
             ResetOwnerThread();
-            _monitor.Conditional.Signal();
+            _monitor.Condition.NotifyOne();
             _monitor.Mutex.Unlock();
         }
 

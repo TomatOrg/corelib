@@ -13,7 +13,7 @@ public class Stopwatch
         Frequency = GetTscFrequency() * TimeSpan.TicksPerSecond;
     }
 
-    [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+    [MethodImpl(MethodCodeType = MethodCodeType.Native)]
     private static extern long GetTscFrequency();
 
     private long _total = 0;
@@ -64,7 +64,7 @@ public class Stopwatch
         IsRunning = false;
     }
     
-    [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+    [MethodImpl(MethodCodeType = MethodCodeType.Native)]
     public static extern long GetTimestamp();
 
     public static Stopwatch StartNew()

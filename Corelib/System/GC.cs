@@ -22,7 +22,7 @@ public static class GC
         Collect(generation, mode);
     }
 
-    [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+    [MethodImpl(MethodCodeType = MethodCodeType.Native)]
     public static extern void Collect(int generation, GCCollectionMode mode, bool blocking);
     
     // TODO: in theory there is also compacting but we don't have such a feature in our garbage 

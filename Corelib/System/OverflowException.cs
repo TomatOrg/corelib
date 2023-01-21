@@ -13,6 +13,7 @@ public class OverflowException : ArithmeticException
     internal const string UInt64 = "Value was either too large or too small for a UInt64.";
     internal const string Int32 = "Value was either too large or too small for an Int32.";
     internal const string Int64 = "Value was either too large or too small for an Int64.";
+    internal const string MutexReacquireCount = "The current thread attempted to reacquire a mutex that has reached its maximum acquire count.";
     
     internal const string Duration =
         " duration cannot be returned for TimeSpan.MinValue because the absolute value of TimeSpan.MinValue exceeds the value of TimeSpan.MaxValue.";

@@ -2106,7 +2106,7 @@ namespace System.Threading.Tasks
 
             if (exceptionalChildren != null)
             {
-                // This lock is necessary because even though AddExceptionsFromChildren is last to execute, it may still
+                // This mutex is necessary because even though AddExceptionsFromChildren is last to execute, it may still
                 // be racing with the code segment at the bottom of Finish() that prunes the exceptional child array.
                 lock (exceptionalChildren)
                 {

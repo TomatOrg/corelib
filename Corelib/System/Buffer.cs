@@ -5,7 +5,7 @@ namespace System;
 internal static class Buffer
 {
 
-    [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+    [MethodImpl(MethodCodeType = MethodCodeType.Native)]
     internal static extern void Memmove(ref byte destination, ref byte source, nuint elementCount);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -23,7 +23,7 @@ internal static class Buffer
         SpanHelpers.ClearWithoutReferences(ref *dest, len);
     }
 
-    [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+    [MethodImpl(MethodCodeType = MethodCodeType.Native)]
     internal static extern void _ZeroMemory(ref byte b, nuint byteLength);
 
 }
