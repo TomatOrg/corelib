@@ -130,6 +130,18 @@ namespace System.Threading
         [MethodImpl(MethodCodeType = MethodCodeType.Native)]
         private static extern bool IsEnteredNative(object obj);
         
+        /// <summary>
+        /// Waits for notification from the object (via a Pulse/PulseAll).
+        /// timeout indicates how long to wait before the method returns.
+        /// This method acquires the monitor waithandle for the object
+        /// If this thread holds the monitor lock for the object, it releases it.
+        /// On exit from the method, it obtains the monitor lock back.
+        ///
+        /// Exceptions: ArgumentNullException if object is null.
+        /// </summary>
+        [MethodImpl(MethodCodeType = MethodCodeType.Native)]
+        private static extern bool ObjWait(int millisecondsTimeout, object obj);
+
         public static bool Wait(object obj, int millisecondsTimeout)
         {
             if (obj == null)
@@ -143,7 +155,7 @@ namespace System.Threading
                 throw new SynchronizationLockException();
             }
 
-            return obj._condition.Wait(ref obj._mutex, millisecondsTimeout);
+            return ObjWait(millisecondsTimeout, obj);
         }
 
         public static void Pulse(object obj)
