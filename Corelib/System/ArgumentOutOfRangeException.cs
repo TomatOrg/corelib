@@ -30,6 +30,8 @@ public class ArgumentOutOfRangeException : ArgumentException
     internal const string GetByteCountOverflow = "Too many characters. The resulting number of bytes is larger than what can be returned as an int.";
     internal const string GetCharCountOverflow = "Too many bytes. The resulting number of chars is larger than what can be returned as an int.";
     internal const string MustBeNonNeg = "The number must be greater than or equal to zero.";
+    internal const string OffsetLength = "Offset and length must refer to a position in the string.";
+    internal const string InputTooLarge = "Input is too large to be processed.";
     
     internal const string InvalidHighSurrogate =
         "A valid high surrogate character is between 0xd800 and 0xdbff, inclusive.";

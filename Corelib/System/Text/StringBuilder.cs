@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 
 namespace System.Text
 {
@@ -325,8 +326,14 @@ namespace System.Text
 
             AssertInvariants();
             string result = string.FastAllocateString(length);
-            this.CopyTo(startIndex, new Span<char>(ref result.GetRawStringData(), length), length);
-            return result;
+            unsafe
+            {
+                fixed (char* destinationPtr = result)
+                {
+                    this.CopyTo(startIndex, new Span<char>(destinationPtr, length), length);
+                    return result;
+                }
+            }
         }
 
         public StringBuilder Clear()
@@ -686,8 +693,14 @@ namespace System.Text
                 return this;
             }
 
-            Append(ref value[startIndex], charCount);
-            return this;
+            unsafe
+            {
+                fixed (char* valueChars = &value[startIndex])
+                {
+                    Append(valueChars, charCount);
+                    return this;
+                }
+            }
         }
 
         /// <summary>
@@ -739,7 +752,13 @@ namespace System.Text
         // case we don't actually use it.
         private void AppendHelper(string value)
         {
-            Append(ref value.GetRawStringData(), value.Length);
+            unsafe
+            {
+                fixed (char* valueChars = value)
+                {
+                    Append(valueChars, value.Length);
+                }
+            }
         }
 
         /// <summary>
@@ -778,8 +797,14 @@ namespace System.Text
                 throw new ArgumentOutOfRangeException(nameof(startIndex), ArgumentOutOfRangeException.Index);
             }
 
-            Append(ref Unsafe.Add(ref value.GetRawStringData(), startIndex), count);
-            return this;
+            unsafe
+            {
+                fixed (char* valueChars = value)
+                {
+                    Append(valueChars + startIndex, count);
+                    return this;
+                }
+            }
         }
 
         public StringBuilder Append(StringBuilder? value)
@@ -965,13 +990,19 @@ namespace System.Text
             Debug.Assert(insertingChars + this.Length < int.MaxValue);
 
             MakeRoom(index, (int)insertingChars, out StringBuilder chunk, out int indexInChunk, false);
-            while (count > 0)
+            unsafe
             {
-                ReplaceInPlaceAtChunk(ref chunk!, ref indexInChunk, ref value.GetRawStringData(), value.Length);
-                --count;
-            }
+                fixed (char* valuePtr = value)
+                {
+                    while (count > 0)
+                    {
+                        ReplaceInPlaceAtChunk(ref chunk!, ref indexInChunk, valuePtr, value.Length);
+                        --count;
+                    }
 
-            return this;
+                    return this;
+                }
+            }
         }
 
         /// <summary>
@@ -1034,25 +1065,25 @@ namespace System.Text
         }
 
         public StringBuilder Append(sbyte value) => AppendSpanFormattable(value);
-        
+
         public StringBuilder Append(byte value) => AppendSpanFormattable(value);
-        
+
         public StringBuilder Append(short value) => AppendSpanFormattable(value);
-        
+
         public StringBuilder Append(int value) => AppendSpanFormattable(value);
-        
+
         public StringBuilder Append(long value) => AppendSpanFormattable(value);
-        
+
         public StringBuilder Append(float value) => AppendSpanFormattable(value);
-        
+
         public StringBuilder Append(double value) => AppendSpanFormattable(value);
 
-        // TODO: public StringBuilder Append(decimal value) => AppendSpanFormattable(value);
+        // public StringBuilder Append(decimal value) => AppendSpanFormattable(value);
 
         public StringBuilder Append(ushort value) => AppendSpanFormattable(value);
-        
+
         public StringBuilder Append(uint value) => AppendSpanFormattable(value);
-        
+
         public StringBuilder Append(ulong value) => AppendSpanFormattable(value);
 
         private StringBuilder AppendSpanFormattable<T>(T value) where T : ISpanFormattable
@@ -1087,7 +1118,13 @@ namespace System.Text
         {
             if (value?.Length > 0)
             {
-                Append(ref value[0], value.Length);
+                unsafe
+                {
+                    fixed (char* valueChars = &value[0])
+                    {
+                        Append(valueChars, value.Length);
+                    }
+                }
             }
             return this;
         }
@@ -1096,7 +1133,13 @@ namespace System.Text
         {
             if (value.Length > 0)
             {
-                Append(ref MemoryMarshal.GetReference(value), value.Length);
+                unsafe
+                {
+                    fixed (char* valueChars = &MemoryMarshal.GetReference(value))
+                    {
+                        Append(valueChars, value.Length);
+                    }
+                }
             }
             return this;
         }
@@ -1130,38 +1173,48 @@ namespace System.Text
         public unsafe StringBuilder AppendJoin(string? separator, params object?[] values)
         {
             separator ??= string.Empty;
-            return AppendJoinCore(ref separator.GetRawStringData(), separator.Length, values);
+            fixed (char* pSeparator = separator)
+            {
+                return AppendJoinCore(pSeparator, separator.Length, values);
+            }
         }
 
         public unsafe StringBuilder AppendJoin<T>(string? separator, IEnumerable<T> values)
         {
             separator ??= string.Empty;
-            return AppendJoinCore(ref separator.GetRawStringData(), separator.Length, values);
+            fixed (char* pSeparator = separator)
+            {
+                return AppendJoinCore(pSeparator, separator.Length, values);
+            }
         }
 
         public unsafe StringBuilder AppendJoin(string? separator, params string?[] values)
         {
             separator ??= string.Empty;
-            return AppendJoinCore(ref separator.GetRawStringData(), separator.Length, values);
+            fixed (char* pSeparator = separator)
+            {
+                return AppendJoinCore(pSeparator, separator.Length, values);
+            }
         }
 
         public unsafe StringBuilder AppendJoin(char separator, params object?[] values)
         {
-            return AppendJoinCore(ref separator, 1, values);
+            return AppendJoinCore(&separator, 1, values);
         }
 
         public unsafe StringBuilder AppendJoin<T>(char separator, IEnumerable<T> values)
         {
-            return AppendJoinCore(ref separator, 1, values);
+            return AppendJoinCore(&separator, 1, values);
         }
 
         public unsafe StringBuilder AppendJoin(char separator, params string?[] values)
         {
-            return AppendJoinCore(ref separator, 1, values);
+            return AppendJoinCore(&separator, 1, values);
         }
 
-        private unsafe StringBuilder AppendJoinCore<T>(ref char separator, int separatorLength, IEnumerable<T> values)
+        private unsafe StringBuilder AppendJoinCore<T>(char* separator, int separatorLength, IEnumerable<T> values)
         {
+            Debug.Assert(separator != null);
             Debug.Assert(separatorLength >= 0);
 
             if (values == null)
@@ -1185,7 +1238,7 @@ namespace System.Text
 
                 while (en.MoveNext())
                 {
-                    Append(ref separator, separatorLength);
+                    Append(separator, separatorLength);
                     value = en.Current;
                     if (value != null)
                     {
@@ -1196,7 +1249,7 @@ namespace System.Text
             return this;
         }
 
-        private unsafe StringBuilder AppendJoinCore<T>(ref char separator, int separatorLength, T[] values)
+        private unsafe StringBuilder AppendJoinCore<T>(char* separator, int separatorLength, T[] values)
         {
             if (values == null)
             {
@@ -1216,7 +1269,7 @@ namespace System.Text
 
             for (int i = 1; i < values.Length; i++)
             {
-                Append(ref separator, separatorLength);
+                Append(separator, separatorLength);
                 if (values[i] != null)
                 {
                     Append(values[i]!.ToString());
@@ -1236,7 +1289,11 @@ namespace System.Text
 
             if (value != null)
             {
-                Insert(index, ref value.GetRawStringData(), value.Length);
+                unsafe
+                {
+                    fixed (char* sourcePtr = value)
+                        Insert(index, sourcePtr, value.Length);
+                }
             }
             return this;
         }
@@ -1253,7 +1310,7 @@ namespace System.Text
         {
             unsafe
             {
-                Insert(index, ref value, 1);
+                Insert(index, &value, 1);
             }
             return this;
         }
@@ -1306,7 +1363,11 @@ namespace System.Text
 
             if (charCount > 0)
             {
-                Insert(index, ref value[startIndex], charCount);
+                unsafe
+                {
+                    fixed (char* sourcePtr = &value[startIndex])
+                        Insert(index, sourcePtr, charCount);
+                }
             }
             return this;
         }
@@ -1338,7 +1399,11 @@ namespace System.Text
 
             if (value.Length > 0)
             {
-                Insert(index, ref MemoryMarshal.GetReference(value), value.Length);
+                unsafe
+                {
+                    fixed (char* sourcePtr = &MemoryMarshal.GetReference(value))
+                        Insert(index, sourcePtr, value.Length);
+                }
             }
             return this;
         }
@@ -1935,7 +2000,7 @@ namespace System.Text
         /// </summary>
         /// <param name="value">The pointer to the start of the buffer.</param>
         /// <param name="valueCount">The number of characters in the buffer.</param>
-        public unsafe StringBuilder Append(ref char value, int valueCount)
+        internal unsafe StringBuilder Append(char* value, int valueCount)
         {
             // We don't check null value as this case will throw null reference exception anyway
             if (valueCount < 0)
@@ -1955,7 +2020,7 @@ namespace System.Text
             int newIndex = valueCount + m_ChunkLength;
             if (newIndex <= m_ChunkChars.Length)
             {
-                new ReadOnlySpan<char>(ref value, valueCount).CopyTo(m_ChunkChars.AsSpan(m_ChunkLength));
+                new ReadOnlySpan<char>(value, valueCount).CopyTo(m_ChunkChars.AsSpan(m_ChunkLength));
                 m_ChunkLength = newIndex;
             }
             else
@@ -1964,7 +2029,7 @@ namespace System.Text
                 int firstLength = m_ChunkChars.Length - m_ChunkLength;
                 if (firstLength > 0)
                 {
-                    new ReadOnlySpan<char>(ref value, firstLength).CopyTo(m_ChunkChars.AsSpan(m_ChunkLength));
+                    new ReadOnlySpan<char>(value, firstLength).CopyTo(m_ChunkChars.AsSpan(m_ChunkLength));
                     m_ChunkLength = m_ChunkChars.Length;
                 }
 
@@ -1974,7 +2039,7 @@ namespace System.Text
                 Debug.Assert(m_ChunkLength == 0, "A new block was not created.");
 
                 // Copy the second chunk
-                new ReadOnlySpan<char>(ref Unsafe.Add(ref value, firstLength), restLength).CopyTo(m_ChunkChars);
+                new ReadOnlySpan<char>(value + firstLength, restLength).CopyTo(m_ChunkChars);
                 m_ChunkLength = restLength;
             }
             AssertInvariants();
@@ -1987,7 +2052,7 @@ namespace System.Text
         /// <param name="index">The index to insert in this builder.</param>
         /// <param name="value">The pointer to the start of the buffer.</param>
         /// <param name="valueCount">The number of characters in the buffer.</param>
-        private unsafe void Insert(int index, ref char value, int valueCount)
+        private unsafe void Insert(int index, char* value, int valueCount)
         {
             if ((uint)index > (uint)Length)
             {
@@ -1997,7 +2062,7 @@ namespace System.Text
             if (valueCount > 0)
             {
                 MakeRoom(index, valueCount, out StringBuilder chunk, out int indexInChunk, false);
-                ReplaceInPlaceAtChunk(ref chunk!, ref indexInChunk, ref value, valueCount);
+                ReplaceInPlaceAtChunk(ref chunk!, ref indexInChunk, value, valueCount);
             }
         }
 
@@ -2019,57 +2084,64 @@ namespace System.Text
                 return;
             }
 
-            Debug.Assert(replacements != null, "replacements was null when replacementsCount > 0");
-            // calculate the total amount of extra space or space needed for all the replacements.
-            long longDelta = (value.Length - removeCount) * (long)replacementsCount;
-            int delta = (int)longDelta;
-            if (delta != longDelta)
+            unsafe
             {
-                throw new OutOfMemoryException();
-            }
-
-            StringBuilder targetChunk = sourceChunk;        // the target as we copy chars down
-            int targetIndexInChunk = replacements[0];
-
-            // Make the room needed for all the new characters if needed.
-            if (delta > 0)
-            {
-                MakeRoom(targetChunk.m_ChunkOffset + targetIndexInChunk, delta, out targetChunk, out targetIndexInChunk, true);
-            }
-
-            // We made certain that characters after the insertion point are not moved,
-            int i = 0;
-            while (true)
-            {
-                // Copy in the new string for the ith replacement
-                ReplaceInPlaceAtChunk(ref targetChunk!, ref targetIndexInChunk, ref value.GetRawStringData(), value.Length);
-                int gapStart = replacements[i] + removeCount;
-                i++;
-                if (i >= replacementsCount)
+                fixed (char* valuePtr = value)
                 {
-                    break;
-                }
+                    Debug.Assert(replacements != null, "replacements was null when replacementsCount > 0");
+                    // calculate the total amount of extra space or space needed for all the replacements.
+                    long longDelta = (value.Length - removeCount) * (long)replacementsCount;
+                    int delta = (int)longDelta;
+                    if (delta != longDelta)
+                    {
+                        throw new OutOfMemoryException();
+                    }
 
-                int gapEnd = replacements[i];
-                Debug.Assert(gapStart < sourceChunk.m_ChunkChars.Length, "gap starts at end of buffer.  Should not happen");
-                Debug.Assert(gapStart <= gapEnd, "negative gap size");
-                Debug.Assert(gapEnd <= sourceChunk.m_ChunkLength, "gap too big");
-                if (delta != 0)     // can skip the sliding of gaps if source an target string are the same size.
-                {
-                    // Copy the gap data between the current replacement and the next replacement
-                    ReplaceInPlaceAtChunk(ref targetChunk!, ref targetIndexInChunk, ref sourceChunk.m_ChunkChars[gapStart], gapEnd - gapStart);
-                }
-                else
-                {
-                    targetIndexInChunk += gapEnd - gapStart;
-                    Debug.Assert(targetIndexInChunk <= targetChunk.m_ChunkLength, "gap not in chunk");
-                }
-            }
+                    StringBuilder targetChunk = sourceChunk;        // the target as we copy chars down
+                    int targetIndexInChunk = replacements[0];
 
-            // Remove extra space if necessary.
-            if (delta < 0)
-            {
-                Remove(targetChunk.m_ChunkOffset + targetIndexInChunk, -delta, out targetChunk, out targetIndexInChunk);
+                    // Make the room needed for all the new characters if needed.
+                    if (delta > 0)
+                    {
+                        MakeRoom(targetChunk.m_ChunkOffset + targetIndexInChunk, delta, out targetChunk, out targetIndexInChunk, true);
+                    }
+
+                    // We made certain that characters after the insertion point are not moved,
+                    int i = 0;
+                    while (true)
+                    {
+                        // Copy in the new string for the ith replacement
+                        ReplaceInPlaceAtChunk(ref targetChunk!, ref targetIndexInChunk, valuePtr, value.Length);
+                        int gapStart = replacements[i] + removeCount;
+                        i++;
+                        if (i >= replacementsCount)
+                        {
+                            break;
+                        }
+
+                        int gapEnd = replacements[i];
+                        Debug.Assert(gapStart < sourceChunk.m_ChunkChars.Length, "gap starts at end of buffer.  Should not happen");
+                        Debug.Assert(gapStart <= gapEnd, "negative gap size");
+                        Debug.Assert(gapEnd <= sourceChunk.m_ChunkLength, "gap too big");
+                        if (delta != 0)     // can skip the sliding of gaps if source an target string are the same size.
+                        {
+                            // Copy the gap data between the current replacement and the next replacement
+                            fixed (char* sourcePtr = &sourceChunk.m_ChunkChars[gapStart])
+                                ReplaceInPlaceAtChunk(ref targetChunk!, ref targetIndexInChunk, sourcePtr, gapEnd - gapStart);
+                        }
+                        else
+                        {
+                            targetIndexInChunk += gapEnd - gapStart;
+                            Debug.Assert(targetIndexInChunk <= targetChunk.m_ChunkLength, "gap not in chunk");
+                        }
+                    }
+
+                    // Remove extra space if necessary.
+                    if (delta < 0)
+                    {
+                        Remove(targetChunk.m_ChunkOffset + targetIndexInChunk, -delta, out targetChunk, out targetIndexInChunk);
+                    }
+                }
             }
         }
 
@@ -2125,7 +2197,7 @@ namespace System.Text
         /// </param>
         /// <param name="value">The pointer to the start of the character buffer.</param>
         /// <param name="count">The number of characters in the buffer.</param>
-        private unsafe void ReplaceInPlaceAtChunk(ref StringBuilder? chunk, ref int indexInChunk, ref char value, int count)
+        private unsafe void ReplaceInPlaceAtChunk(ref StringBuilder? chunk, ref int indexInChunk, char* value, int count)
         {
             if (count != 0)
             {
@@ -2136,7 +2208,7 @@ namespace System.Text
                     Debug.Assert(lengthInChunk >= 0, "Index isn't in the chunk.");
 
                     int lengthToCopy = Math.Min(lengthInChunk, count);
-                    new ReadOnlySpan<char>(ref value, lengthToCopy).CopyTo(chunk.m_ChunkChars.AsSpan(indexInChunk));
+                    new ReadOnlySpan<char>(value, lengthToCopy).CopyTo(chunk.m_ChunkChars.AsSpan(indexInChunk));
 
                     // Advance the index.
                     indexInChunk += lengthToCopy;
@@ -2150,8 +2222,7 @@ namespace System.Text
                     {
                         break;
                     }
-
-                    value = ref Unsafe.Add(ref value, lengthToCopy);
+                    value += lengthToCopy;
                 }
             }
         }
@@ -2668,7 +2739,7 @@ namespace System.Text
                 // then append that written span into the StringBuilder: StringBuilder.Append(span) is able to split the
                 // span across the current chunk and any additional chunks required.
 
-                var handler = new DefaultInterpolatedStringHandler(0, 0, _provider, new char[256]);
+                var handler = new DefaultInterpolatedStringHandler(0, 0, _provider, stackalloc char[256]);
                 handler.AppendFormatted(value, format);
                 AppendFormatted(handler.Text, alignment);
                 handler.Clear();
